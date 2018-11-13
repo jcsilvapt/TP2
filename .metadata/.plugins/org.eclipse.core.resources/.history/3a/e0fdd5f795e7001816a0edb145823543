@@ -1,0 +1,16 @@
+package Comportamentos;
+
+public class Vaguear extends Comportamentos {
+	
+	public Vaguear() {
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		Vaguear vaguear = new Vaguear();
+		vaguear.run();
+
+	}
+
+}

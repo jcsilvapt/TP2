@@ -17,7 +17,9 @@ import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-public class Gui extends Thread {
+import Comportamentos.Comportamentos;
+
+public class Gui extends Comportamentos {
 
 	private JFrame frame;
 	private JTextField txtNomeRobot;
@@ -38,7 +40,11 @@ public class Gui extends Thread {
 	private String name;
 	private int offSetLeft, offSetRight, angle, distance, radius;
 
-
+	public void run() {
+		
+	}
+		
+	
 	/**
 	 * Launch the application.
 	 */

@@ -1,0 +1,18 @@
+package Comportamentos;
+
+import myRobot.myRobot;
+
+public abstract class Comportamentos extends Thread {
+
+	public abstract void run();
+	
+	public void move(int distance) {
+		
+	}
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
