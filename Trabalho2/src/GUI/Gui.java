@@ -133,26 +133,6 @@ public class Gui extends Thread {
 		panelConeccao.add(lblNomeRobot);
 
 		txtNomeRobot = new JTextField();
-		txtNomeRobot.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				name = txtNomeRobot.getText();
-				if (name.length() > 0) {
-					txtNomeRobot.setBackground(Color.WHITE);
-				}
-			}
-		});
-		txtNomeRobot.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyChar() == KeyEvent.VK_ENTER) {
-					name = txtNomeRobot.getText();
-					if (name.length() > 0) {
-						txtNomeRobot.setBackground(Color.WHITE);
-					}
-				}
-			}
-		});
 		txtNomeRobot.setHorizontalAlignment(SwingConstants.CENTER);
 		txtNomeRobot.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtNomeRobot.setBounds(67, 34, 226, 21);
@@ -160,12 +140,6 @@ public class Gui extends Thread {
 		txtNomeRobot.setColumns(10);
 
 		btnConectar = new JButton("Ligar");
-		btnConectar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				connectRobot();
-			}
-		});
 		btnConectar.setToolTipText("Ligar Gestor");
 		btnConectar.setEnabled(true);
 		btnConectar.setFont(new Font("Tahoma", Font.PLAIN, 10));
@@ -209,14 +183,6 @@ public class Gui extends Thread {
 		panelRobot.add(lblRaio);
 
 		txtDistance = new JTextField();
-		txtDistance.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-					distance = Integer.parseInt(txtDistance.getText());
-				}
-			}
-		});
 		txtDistance.setHorizontalAlignment(SwingConstants.CENTER);
 		txtDistance.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtDistance.setBounds(80, 49, 76, 19);
@@ -224,14 +190,6 @@ public class Gui extends Thread {
 		txtDistance.setColumns(10);
 
 		txtAngle = new JTextField();
-		txtAngle.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-					angle = Integer.parseInt(txtAngle.getText());
-				}
-			}
-		});
 		txtAngle.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtAngle.setHorizontalAlignment(SwingConstants.CENTER);
 		txtAngle.setBounds(80, 111, 76, 19);
@@ -239,14 +197,6 @@ public class Gui extends Thread {
 		txtAngle.setColumns(10);
 
 		txtRadius = new JTextField();
-		txtRadius.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-					radius = Integer.parseInt(txtRadius.getText());
-				}
-			}
-		});
 		txtRadius.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtRadius.setHorizontalAlignment(SwingConstants.CENTER);
 		txtRadius.setBounds(80, 171, 76, 19);
@@ -254,59 +204,27 @@ public class Gui extends Thread {
 		txtRadius.setColumns(10);
 
 		JButton btnAvancar = new JButton("Avan\u00E7ar");
-		btnAvancar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				move(false);
-			}
-		});
 		btnAvancar.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnAvancar.setBounds(272, 44, 76, 32);
 		panelRobot.add(btnAvancar);
 
 		JButton btnParar = new JButton("Parar");
-		btnParar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				stopMove();
-			}
-		});
 		btnParar.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnParar.setBounds(272, 104, 76, 32);
 		panelRobot.add(btnParar);
 
 		JButton btnRecuar = new JButton("Recuar");
-		btnRecuar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				move(true);
-			}
-		});
 		btnRecuar.setFont(new Font("Tahoma", Font.PLAIN, 10));
 
 		btnRecuar.setBounds(272, 164, 76, 32);
 		panelRobot.add(btnRecuar);
 
 		JButton btnEsquerda = new JButton("Esquerda");
-		btnEsquerda.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				turn(false);
-			}
-		});
-
 		btnEsquerda.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnEsquerda.setBounds(173, 104, 76, 32);
 		panelRobot.add(btnEsquerda);
 
 		JButton btnDireita = new JButton("Direita");
-		btnDireita.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				turn(true);
-			}
-		});
-
 		btnDireita.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnDireita.setBounds(371, 104, 76, 32);
 		panelRobot.add(btnDireita);
@@ -321,14 +239,6 @@ public class Gui extends Thread {
 		panelRobot.add(lblOffsetEsq);
 
 		txtOffsetLeft = new JTextField();
-		txtOffsetLeft.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-					offSetLeft = Integer.parseInt(txtOffsetLeft.getText());
-				}
-			}
-		});
 		txtOffsetLeft.setHorizontalAlignment(SwingConstants.CENTER);
 		txtOffsetLeft.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtOffsetLeft.setBounds(173, 49, 76, 19);
@@ -336,14 +246,6 @@ public class Gui extends Thread {
 		txtOffsetLeft.setColumns(10);
 
 		txtOffsetRight = new JTextField();
-		txtOffsetRight.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-					offSetRight = Integer.parseInt(txtOffsetRight.getText());
-				}
-			}
-		});
 		txtOffsetRight.setHorizontalAlignment(SwingConstants.CENTER);
 		txtOffsetRight.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtOffsetRight.setBounds(371, 49, 76, 19);
@@ -359,23 +261,6 @@ public class Gui extends Thread {
 		panelRobot.add(lblOffsetDrt);
 
 		chckbxVaguear = new JCheckBox("Vaguear");
-		chckbxVaguear.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (chckbxVaguear.isSelected() && pGestor != null) {
-					try {
-						pVaguear = buildProcess(Comunicar.VAGUEAR).start();
-						logger("Vaguear Inicializado");
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} else if (pVaguear != null && pGestor != null) {
-					gestor.enviarMsg(new byte[] { Comunicar.GUI, Comunicar.STOP, Comunicar.VAGUEAR }, Comunicar.EMPTY);
-					logger("Vaguear desligado!");
-					pVaguear.destroy();
-				}
-			}
-		});
 		chckbxVaguear.setEnabled(true);
 		chckbxVaguear.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		chckbxVaguear.setForeground(Color.WHITE);
@@ -384,23 +269,6 @@ public class Gui extends Thread {
 		panelRobot.add(chckbxVaguear);
 
 		chckbxEvitar = new JCheckBox("Evitar");
-		chckbxEvitar.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (chckbxEvitar.isSelected() && pGestor != null) {
-					try {
-						pEvitar = buildProcess(Comunicar.EVITAR).start();
-						logger("Evitar Inicializado");
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} else if (pEvitar != null && pGestor != null) {
-					gestor.enviarMsg(new byte[] { Comunicar.GUI, Comunicar.STOP, Comunicar.EVITAR }, Comunicar.EMPTY);
-					logger("Evitar Desligado");
-					pEvitar.destroy();
-				}
-			}
-		});
 		chckbxEvitar.setEnabled(true);
 		chckbxEvitar.setForeground(Color.WHITE);
 		chckbxEvitar.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -409,32 +277,6 @@ public class Gui extends Thread {
 		panelRobot.add(chckbxEvitar);
 
 		chckbxGestor = new JCheckBox("Gestor");
-		chckbxGestor.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (chckbxGestor.isSelected()) {
-					try {
-						pGestor = buildProcess(Comunicar.GESTOR).start();
-						logger("Gestor Inicializado");
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} else {
-					if (pGestor != null) {
-						gestor.enviarMsg(new byte[] { Comunicar.GUI, Comunicar.STOP, Comunicar.GESTOR },
-								Comunicar.EMPTY);
-						try {
-							Thread.sleep(50);
-						} catch (InterruptedException e1) {
-							e1.printStackTrace();
-						}
-						logger("Gestor desligado!");
-						pGestor.destroy();
-					}
-				}
-
-			}
-		});
 		chckbxGestor.setForeground(Color.WHITE);
 		chckbxGestor.setBackground(Color.BLACK);
 		chckbxGestor.setFont(new Font("Tahoma", Font.PLAIN, 15));
