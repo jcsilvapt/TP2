@@ -3,6 +3,13 @@ package GUI;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -13,9 +20,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.UIManager;
 
 public class Gui extends Thread {
 
@@ -123,13 +130,13 @@ public class Gui extends Thread {
 		lblNomeRobot.setHorizontalAlignment(SwingConstants.LEFT);
 		lblNomeRobot.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblNomeRobot.setForeground(Color.WHITE);
-		lblNomeRobot.setBounds(53, 22, 47, 40);
+		lblNomeRobot.setBounds(10, 24, 47, 40);
 		panelConeccao.add(lblNomeRobot);
 
 		txtNomeRobot = new JTextField();
 		txtNomeRobot.setHorizontalAlignment(SwingConstants.CENTER);
 		txtNomeRobot.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		txtNomeRobot.setBounds(110, 32, 226, 21);
+		txtNomeRobot.setBounds(67, 34, 226, 21);
 		panelConeccao.add(txtNomeRobot);
 		txtNomeRobot.setColumns(10);
 
@@ -137,14 +144,14 @@ public class Gui extends Thread {
 		btnConectar.setToolTipText("Ligar Gestor");
 		btnConectar.setEnabled(true);
 		btnConectar.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		btnConectar.setBounds(471, 31, 112, 19);
+		btnConectar.setBounds(496, 32, 112, 19);
 		panelConeccao.add(btnConectar);
 
 		lblConectado = new JLabel("");
 		lblConectado.setBackground(Color.RED);
 		lblConectado.setOpaque(true);
 		lblConectado.setForeground(Color.RED);
-		lblConectado.setBounds(471, 52, 112, 3);
+		lblConectado.setBounds(496, 53, 112, 3);
 		panelConeccao.add(lblConectado);
 
 		JPanel panelRobot = new JPanel();

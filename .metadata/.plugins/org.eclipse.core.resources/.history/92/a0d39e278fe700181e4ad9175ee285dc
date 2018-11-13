@@ -3,6 +3,13 @@ package GUI;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -13,7 +20,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
@@ -106,7 +112,7 @@ public class Gui extends Thread {
 		frame.setTitle("..:FSO-TP1:..");
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(Color.BLACK);
-		frame.setBounds(100, 100, 656, 588);
+		frame.setBounds(100, 100, 573, 588);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
@@ -115,7 +121,7 @@ public class Gui extends Thread {
 		panelConeccao.setBorder(
 				new TitledBorder(null, "CONEC\u00C7\u00C3O", TitledBorder.LEFT, TitledBorder.TOP, null, Color.WHITE));
 		panelConeccao.setBackground(Color.BLACK);
-		panelConeccao.setBounds(10, 10, 630, 79);
+		panelConeccao.setBounds(10, 10, 548, 79);
 		frame.getContentPane().add(panelConeccao);
 		panelConeccao.setLayout(null);
 
@@ -123,13 +129,13 @@ public class Gui extends Thread {
 		lblNomeRobot.setHorizontalAlignment(SwingConstants.LEFT);
 		lblNomeRobot.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblNomeRobot.setForeground(Color.WHITE);
-		lblNomeRobot.setBounds(53, 22, 47, 40);
+		lblNomeRobot.setBounds(10, 24, 47, 40);
 		panelConeccao.add(lblNomeRobot);
 
 		txtNomeRobot = new JTextField();
 		txtNomeRobot.setHorizontalAlignment(SwingConstants.CENTER);
 		txtNomeRobot.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		txtNomeRobot.setBounds(110, 32, 226, 21);
+		txtNomeRobot.setBounds(67, 34, 226, 21);
 		panelConeccao.add(txtNomeRobot);
 		txtNomeRobot.setColumns(10);
 
@@ -137,14 +143,14 @@ public class Gui extends Thread {
 		btnConectar.setToolTipText("Ligar Gestor");
 		btnConectar.setEnabled(true);
 		btnConectar.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		btnConectar.setBounds(471, 31, 112, 19);
+		btnConectar.setBounds(420, 34, 112, 19);
 		panelConeccao.add(btnConectar);
 
 		lblConectado = new JLabel("");
 		lblConectado.setBackground(Color.RED);
 		lblConectado.setOpaque(true);
 		lblConectado.setForeground(Color.RED);
-		lblConectado.setBounds(471, 52, 112, 3);
+		lblConectado.setBounds(420, 55, 112, 3);
 		panelConeccao.add(lblConectado);
 
 		JPanel panelRobot = new JPanel();
@@ -152,7 +158,7 @@ public class Gui extends Thread {
 				new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "ROBOT",
 				TitledBorder.LEFT, TitledBorder.TOP, null, new Color(255, 255, 255)));
 		panelRobot.setBackground(Color.BLACK);
-		panelRobot.setBounds(10, 99, 630, 214);
+		panelRobot.setBounds(10, 99, 548, 214);
 		frame.getContentPane().add(panelRobot);
 		panelRobot.setLayout(null);
 
@@ -253,43 +259,35 @@ public class Gui extends Thread {
 		lblOffsetDrt.setVerticalAlignment(SwingConstants.TOP);
 		lblOffsetDrt.setBounds(359, 20, 95, 19);
 		panelRobot.add(lblOffsetDrt);
-		
-		JPanel panel = new JPanel();
-		panel.setForeground(Color.WHITE);
-		panel.setBackground(Color.BLACK);
-		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Comportamentos", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
-		panel.setBounds(464, 33, 145, 153);
-		panelRobot.add(panel);
-		panel.setLayout(null);
-		
-				chckbxEvitar = new JCheckBox("Evitar");
-				chckbxEvitar.setBounds(6, 68, 81, 21);
-				panel.add(chckbxEvitar);
-				chckbxEvitar.setEnabled(true);
-				chckbxEvitar.setForeground(Color.WHITE);
-				chckbxEvitar.setFont(new Font("Tahoma", Font.PLAIN, 15));
-				chckbxEvitar.setBackground(Color.BLACK);
-				
-						chckbxVaguear = new JCheckBox("Vaguear");
-						chckbxVaguear.setBounds(6, 33, 81, 21);
-						panel.add(chckbxVaguear);
-						chckbxVaguear.setEnabled(true);
-						chckbxVaguear.setFont(new Font("Tahoma", Font.PLAIN, 15));
-						chckbxVaguear.setForeground(Color.WHITE);
-						chckbxVaguear.setBackground(Color.BLACK);
-						
-								chckbxGestor = new JCheckBox("Gestor");
-								chckbxGestor.setBounds(6, 105, 81, 21);
-								panel.add(chckbxGestor);
-								chckbxGestor.setForeground(Color.WHITE);
-								chckbxGestor.setBackground(Color.BLACK);
-								chckbxGestor.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+		chckbxVaguear = new JCheckBox("Vaguear");
+		chckbxVaguear.setEnabled(true);
+		chckbxVaguear.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxVaguear.setForeground(Color.WHITE);
+		chckbxVaguear.setBackground(Color.BLACK);
+		chckbxVaguear.setBounds(461, 48, 81, 21);
+		panelRobot.add(chckbxVaguear);
+
+		chckbxEvitar = new JCheckBox("Evitar");
+		chckbxEvitar.setEnabled(true);
+		chckbxEvitar.setForeground(Color.WHITE);
+		chckbxEvitar.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxEvitar.setBackground(Color.BLACK);
+		chckbxEvitar.setBounds(461, 108, 81, 21);
+		panelRobot.add(chckbxEvitar);
+
+		chckbxGestor = new JCheckBox("Gestor");
+		chckbxGestor.setForeground(Color.WHITE);
+		chckbxGestor.setBackground(Color.BLACK);
+		chckbxGestor.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxGestor.setBounds(461, 168, 81, 21);
+		panelRobot.add(chckbxGestor);
 
 		JPanel panelLogging = new JPanel();
 		panelLogging
 				.setBorder(new TitledBorder(null, "LOGGING", TitledBorder.LEFT, TitledBorder.TOP, null, Color.WHITE));
 		panelLogging.setBackground(Color.BLACK);
-		panelLogging.setBounds(10, 323, 630, 228);
+		panelLogging.setBounds(10, 323, 548, 228);
 		frame.getContentPane().add(panelLogging);
 		panelLogging.setLayout(null);
 
@@ -303,13 +301,13 @@ public class Gui extends Thread {
 
 		JButton btnClearLogging = new JButton("Limpar Logger");
 		btnClearLogging.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		btnClearLogging.setBounds(510, 22, 110, 21);
+		btnClearLogging.setBounds(428, 22, 110, 21);
 		panelLogging.add(btnClearLogging);
 
 		JScrollPane spLogging = new JScrollPane();
 		spLogging.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		spLogging.setBackground(Color.BLACK);
-		spLogging.setBounds(10, 50, 610, 168);
+		spLogging.setBounds(10, 50, 528, 168);
 		panelLogging.add(spLogging);
 
 		txtrLogging = new JTextArea();
@@ -317,4 +315,5 @@ public class Gui extends Thread {
 		txtrLogging.setLineWrap(true);
 		spLogging.setViewportView(txtrLogging);
 	}
+
 }
