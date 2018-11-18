@@ -7,3 +7,5 @@
 1542144406034	Delete element
 1542144447151	Delete elements
 1542147415081	Rename package 'Vaguear'
+1542569191354	Rename local variable 'previous'
+1542569195045	Rename field 'previous'

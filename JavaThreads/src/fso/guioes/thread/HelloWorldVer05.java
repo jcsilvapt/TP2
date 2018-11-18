@@ -20,19 +20,14 @@ public class HelloWorldVer05 extends Thread {
 		}
 	}
 	
-	public static void main(String[] args) {
-		try {
-			Thread thHello, thWorld;
-			
-			thHello = new HelloWorldVer05( "Hello" );
-			thWorld = new HelloWorldVer05( " world.\n" );
-			
-			thHello.start();
-			thHello.join();
-			thWorld.start();
-		}
-		catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	public static void main(String[] args) throws InterruptedException {
+		Thread thHello, thWorld;
+		
+		thHello = new HelloWorldVer05( "Hello" );
+		thWorld = new HelloWorldVer05( " world.\n" );
+		
+		thHello.start();
+		thHello.join();
+		thWorld.start();
 	}
 }

@@ -66,9 +66,8 @@ public class HelloWorldVer05d extends Thread {
 
 		thHello = new HelloWorldVer05d(true, "Hello", myFlag_M_O, myFlag_O_M);
 		thWorld = new HelloWorldVer05d(false, " world\n", myFlag_M_O, myFlag_O_M);
-
+		
+		thHello.start();	
 		thWorld.start();
-
-		thHello.start();
 	}
 }

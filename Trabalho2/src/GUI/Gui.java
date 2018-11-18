@@ -3,6 +3,7 @@ package GUI;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
+import java.awt.Robot;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,8 +19,16 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import Comportamentos.Comportamentos;
+import myRobot.myRobot;
 
-public class Gui extends Comportamentos {
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
+public class Gui extends Thread {
 
 	private JFrame frame;
 	private JTextField txtNomeRobot;
@@ -39,12 +48,14 @@ public class Gui extends Comportamentos {
 	// Variaveis Globais
 	private String name;
 	private int offSetLeft, offSetRight, angle, distance, radius;
+	boolean robotOn;
+
+	myRobot robot;
 
 	public void run() {
-		
+
 	}
-		
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -65,6 +76,7 @@ public class Gui extends Comportamentos {
 		this.angle = 90;
 		this.distance = 20;
 		this.radius = 10;
+		this.robotOn = false;
 
 		this.txtNomeRobot.setText(name);
 		this.txtOffsetLeft.setText(String.valueOf(offSetLeft));
@@ -73,7 +85,78 @@ public class Gui extends Comportamentos {
 		this.txtAngle.setText(String.valueOf(angle));
 		this.txtDistance.setText(String.valueOf(distance));
 
+		robot = new myRobot();
+
 	}
+
+	/**
+	 * Método para Ligar/Desligar o ROBOT
+	 */
+	private void connectRobot() {
+		if (robotOn) {
+			updateConnect(false);
+			robot.CloseEV3();
+		} else {
+			if (name.equals("") || name == null || name.length() <= 0) {
+				txtNomeRobot.setBackground(Color.RED);
+				logger("Nome do Robot vazio...");
+			} else {
+				boolean control = true;
+				while (control) {
+					if (robot.OpenEV3(name)) {
+						updateConnect(true);
+						control = false;
+					} else {
+						try {
+							Thread.sleep(250);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * Método para alterar gráficamente a GUI.
+	 * 
+	 * @param value: - true = Altera gráficamente a GUI para indicar que a há
+	 *        Ligação ao Robot. - false = Altera gráficamente a GUI para indicar que
+	 *        não há Ligação ao Robot.
+	 */
+	private void updateConnect(boolean value) {
+		if (value) {
+			btnConectar.setText("Desligar");
+			lblConectado.setBackground(Color.GREEN);
+			logger("Ligação ao Robot Concluída com Sucesso!");
+			robotOn = true;
+		} else {
+			btnConectar.setText("Ligar");
+			lblConectado.setBackground(Color.red);
+			logger("Ligação ao Robot desligada com sucesso!");
+			robotOn = false;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param backwards:
+	 * 		- False = Distnace value takes its integral value
+	 * 		- True = Distance value is negated
+	 */
+	private void move(boolean backwards) {
+		int dis = distance;
+		if(robotOn) {
+			if(backwards) {
+				dis = dis * -1;
+			}
+			robot.Reta(dis);
+		}
+	}
+	
+	
 
 	/**
 	 * Função que regista o texto no logger caso este esteja activo
@@ -133,6 +216,26 @@ public class Gui extends Comportamentos {
 		panelConeccao.add(lblNomeRobot);
 
 		txtNomeRobot = new JTextField();
+		txtNomeRobot.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				name = txtNomeRobot.getText();
+				if (name.length() > 0) {
+					txtNomeRobot.setBackground(Color.WHITE);
+				}
+			}
+		});
+		txtNomeRobot.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					name = txtNomeRobot.getText();
+					if (name.length() > 0) {
+						txtNomeRobot.setBackground(Color.WHITE);
+					}
+				}
+			}
+		});
 		txtNomeRobot.setHorizontalAlignment(SwingConstants.CENTER);
 		txtNomeRobot.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtNomeRobot.setBounds(110, 32, 226, 21);
@@ -140,6 +243,12 @@ public class Gui extends Comportamentos {
 		txtNomeRobot.setColumns(10);
 
 		btnConectar = new JButton("Ligar");
+		btnConectar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				connectRobot();
+			}
+		});
 		btnConectar.setToolTipText("Ligar Gestor");
 		btnConectar.setEnabled(true);
 		btnConectar.setFont(new Font("Tahoma", Font.PLAIN, 10));
@@ -259,37 +368,38 @@ public class Gui extends Comportamentos {
 		lblOffsetDrt.setVerticalAlignment(SwingConstants.TOP);
 		lblOffsetDrt.setBounds(359, 20, 95, 19);
 		panelRobot.add(lblOffsetDrt);
-		
+
 		JPanel panel = new JPanel();
 		panel.setForeground(Color.WHITE);
 		panel.setBackground(Color.BLACK);
-		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Comportamentos", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
+		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Comportamentos",
+				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
 		panel.setBounds(464, 33, 145, 153);
 		panelRobot.add(panel);
 		panel.setLayout(null);
-		
-				chckbxEvitar = new JCheckBox("Evitar");
-				chckbxEvitar.setBounds(6, 68, 81, 21);
-				panel.add(chckbxEvitar);
-				chckbxEvitar.setEnabled(true);
-				chckbxEvitar.setForeground(Color.WHITE);
-				chckbxEvitar.setFont(new Font("Tahoma", Font.PLAIN, 15));
-				chckbxEvitar.setBackground(Color.BLACK);
-				
-						chckbxVaguear = new JCheckBox("Vaguear");
-						chckbxVaguear.setBounds(6, 33, 81, 21);
-						panel.add(chckbxVaguear);
-						chckbxVaguear.setEnabled(true);
-						chckbxVaguear.setFont(new Font("Tahoma", Font.PLAIN, 15));
-						chckbxVaguear.setForeground(Color.WHITE);
-						chckbxVaguear.setBackground(Color.BLACK);
-						
-								chckbxGestor = new JCheckBox("Gestor");
-								chckbxGestor.setBounds(6, 105, 81, 21);
-								panel.add(chckbxGestor);
-								chckbxGestor.setForeground(Color.WHITE);
-								chckbxGestor.setBackground(Color.BLACK);
-								chckbxGestor.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+		chckbxEvitar = new JCheckBox("Evitar");
+		chckbxEvitar.setBounds(6, 68, 81, 21);
+		panel.add(chckbxEvitar);
+		chckbxEvitar.setEnabled(true);
+		chckbxEvitar.setForeground(Color.WHITE);
+		chckbxEvitar.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxEvitar.setBackground(Color.BLACK);
+
+		chckbxVaguear = new JCheckBox("Vaguear");
+		chckbxVaguear.setBounds(6, 33, 81, 21);
+		panel.add(chckbxVaguear);
+		chckbxVaguear.setEnabled(true);
+		chckbxVaguear.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxVaguear.setForeground(Color.WHITE);
+		chckbxVaguear.setBackground(Color.BLACK);
+
+		chckbxGestor = new JCheckBox("Gestor");
+		chckbxGestor.setBounds(6, 105, 81, 21);
+		panel.add(chckbxGestor);
+		chckbxGestor.setForeground(Color.WHITE);
+		chckbxGestor.setBackground(Color.BLACK);
+		chckbxGestor.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		JPanel panelLogging = new JPanel();
 		panelLogging

@@ -1,50 +1,32 @@
 package Comportamentos;
 
-import java.util.Random;
-
 public class Vaguear extends Comportamentos {
 
-	public Vaguear(String ThreadName, int baseSleepTime, int sleepTime, boolean avoid) {
-		super(ThreadName, baseSleepTime, sleepTime, avoid);
-		
-	}
-	
-	private String randomMove() {
-		String[] accao = {"|", "/", "->", "<-"};
-		
-		int t = (int) (0 + Math.random()*4);
-		
-		return accao[t];
-	}
-	
-	@Override
-	public void run() {
-		Random rnd = new Random();
-		int fullTime;
-		for(;;) {
-			if(this.getAvoid() && this.getThreadName().equals("Evitar[2]")) {
-				System.out.println(this.getThreadName());
-				fullTime = this.getBaseSleepTime() + rnd.nextInt(this.getSleepTime());
-			}else {
-				System.out.println(this.getThreadName() + " : " + randomMove());
-				fullTime = this.getBaseSleepTime() + rnd.nextInt(this.getSleepTime());
-			}
-			try {
-				Thread.sleep(fullTime);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-	}
-	
-	public static void main(String[] args) throws InterruptedException {
-		Thread vaguear1 = new Vaguear("Vaguear[1]", 500, 100, false);
-		Thread evitar = new Vaguear("Evitar[2]", 500, 100, true);
-		
-		vaguear1.start();
-		evitar.start();
+	public Vaguear(String name, ISync actual, ISync next) {
+		super(name, actual, next);
 	}
 
+
+	public static void main(String[] args) throws InterruptedException {
+		
+		ISync sync1, sync2, sync3;
+		
+		sync1 = new SyncSemaphore();
+		sync2 = new SyncSemaphore();
+		sync3 = new SyncSemaphore();
+		
+		Thread evitar1, evitar2, evitar3;
+		
+		evitar1 = new Vaguear("Vaguear-1\n", sync1, sync2);
+		evitar2 = new Vaguear("Vaguear-2\n", sync2, sync3);
+		evitar3 = new Vaguear("Vaguear-3\n", sync3, sync1);
+		
+		evitar1.start();
+		evitar2.start();
+		evitar3.start();
+		
+		sync1.syncSignal();
+	}
+	
 	
 }
