@@ -3,7 +3,14 @@ package GUI;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
-import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,15 +25,8 @@ import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import Comportamentos.Comportamentos;
+import Comportamentos.Vaguear;
 import myRobot.myRobot;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class Gui extends Thread {
 
@@ -44,11 +44,19 @@ public class Gui extends Thread {
 	private JCheckBox chckbxGestor;
 	private JButton btnConectar;
 	private JLabel lblConectado;
+	
+	// Texto pre-definidos
+	
+	private final String NOTCONNECTED = "Ligação ao Robot não iniciada...";
 
 	// Variaveis Globais
 	private String name;
 	private int offSetLeft, offSetRight, angle, distance, radius;
 	boolean robotOn;
+	
+	
+	// TEstes
+	Vaguear va;
 
 	myRobot robot;
 
@@ -101,6 +109,8 @@ public class Gui extends Thread {
 				txtNomeRobot.setBackground(Color.RED);
 				logger("Nome do Robot vazio...");
 			} else {
+				logger("A iniciar ligação");
+				logger("Aguarde...");
 				boolean control = true;
 				while (control) {
 					if (robot.OpenEV3(name)) {
@@ -153,6 +163,41 @@ public class Gui extends Thread {
 				dis = dis * -1;
 			}
 			robot.Reta(dis);
+		}else {
+			logger(NOTCONNECTED);
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * Método para fazer o Robot Virar...
+	 * 
+	 * @param right
+	 * 		- True - Virar a direita
+	 * 		- False - Virar a Esquerda
+	 */
+	private void turn(boolean right) {
+		if(robotOn) {
+			if(right){
+				robot.CurvarDireita(radius, angle);
+			}else {
+				robot.CurvarEsquerda(radius, angle);
+			}
+			robot.Parar(false);
+		}else {
+			logger(NOTCONNECTED);
+		}
+	}
+	
+	/**
+	 *  Método para PARA logo o robot.
+	 */
+	private void stopMove() {
+		if(robotOn) {
+			robot.Parar(true);
+		}else {
+			logger(NOTCONNECTED);
 		}
 	}
 	
@@ -162,6 +207,7 @@ public class Gui extends Thread {
 	 * Função que regista o texto no logger caso este esteja activo
 	 * 
 	 * @param text
+	 * 		- text - Texto para ser inserido no logger (gráfico)
 	 */
 	public void logger(String text) {
 		if (txtrLogging.isEnabled()) {
@@ -183,6 +229,7 @@ public class Gui extends Thread {
 	 * Create the application.
 	 */
 	public Gui() {
+		super("GUI");
 		initialize();
 		init();
 	}
@@ -313,27 +360,62 @@ public class Gui extends Thread {
 		txtRadius.setColumns(10);
 
 		JButton btnAvancar = new JButton("Avan\u00E7ar");
+		btnAvancar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				distance = Integer.parseInt(txtDistance.getText());
+				move(false);
+			}
+		});
 		btnAvancar.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnAvancar.setBounds(272, 44, 76, 32);
 		panelRobot.add(btnAvancar);
 
 		JButton btnParar = new JButton("Parar");
+		btnParar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				stopMove();
+			}
+		});
 		btnParar.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnParar.setBounds(272, 104, 76, 32);
 		panelRobot.add(btnParar);
 
 		JButton btnRecuar = new JButton("Recuar");
+		btnRecuar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				distance = Integer.parseInt(txtDistance.getText());
+				move(true);
+			}
+		});
 		btnRecuar.setFont(new Font("Tahoma", Font.PLAIN, 10));
 
 		btnRecuar.setBounds(272, 164, 76, 32);
 		panelRobot.add(btnRecuar);
 
 		JButton btnEsquerda = new JButton("Esquerda");
+		btnEsquerda.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				radius = Integer.parseInt(txtRadius.getText());
+				angle = Integer.parseInt(txtAngle.getText());
+				turn(false);
+			}
+		});
 		btnEsquerda.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnEsquerda.setBounds(173, 104, 76, 32);
 		panelRobot.add(btnEsquerda);
 
 		JButton btnDireita = new JButton("Direita");
+		btnDireita.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				radius = Integer.parseInt(txtRadius.getText());
+				angle = Integer.parseInt(txtAngle.getText());
+				turn(true);
+			}
+		});
 		btnDireita.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnDireita.setBounds(371, 104, 76, 32);
 		panelRobot.add(btnDireita);
@@ -387,6 +469,21 @@ public class Gui extends Thread {
 		chckbxEvitar.setBackground(Color.BLACK);
 
 		chckbxVaguear = new JCheckBox("Vaguear");
+		chckbxVaguear.addMouseListener(new MouseAdapter() {
+			@SuppressWarnings("deprecation")
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(!chckbxVaguear.isSelected()) {
+					chckbxVaguear.setSelected(true);
+					va = new Vaguear("Thread-1", null,null);
+					va.start();
+				}else {
+					chckbxVaguear.setEnabled(false);
+					va.destroy();
+				}
+				
+			}
+		});
 		chckbxVaguear.setBounds(6, 33, 81, 21);
 		panel.add(chckbxVaguear);
 		chckbxVaguear.setEnabled(true);
@@ -394,7 +491,7 @@ public class Gui extends Thread {
 		chckbxVaguear.setForeground(Color.WHITE);
 		chckbxVaguear.setBackground(Color.BLACK);
 
-		chckbxGestor = new JCheckBox("Gestor");
+		chckbxGestor = new JCheckBox("Fugir");
 		chckbxGestor.setBounds(6, 105, 81, 21);
 		panel.add(chckbxGestor);
 		chckbxGestor.setForeground(Color.WHITE);
@@ -410,6 +507,16 @@ public class Gui extends Thread {
 		panelLogging.setLayout(null);
 
 		chckbxCheckLogging = new JCheckBox("Ativar Logger");
+		chckbxCheckLogging.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(chckbxCheckLogging.isSelected()) {
+					txtrLogging.setEnabled(true);
+				}else{
+					txtrLogging.setEnabled(false);
+				}
+			}
+		});
 		chckbxCheckLogging.setSelected(true);
 		chckbxCheckLogging.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		chckbxCheckLogging.setForeground(Color.WHITE);
@@ -418,6 +525,12 @@ public class Gui extends Thread {
 		panelLogging.add(chckbxCheckLogging);
 
 		JButton btnClearLogging = new JButton("Limpar Logger");
+		btnClearLogging.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				clearLog();
+			}
+		});
 		btnClearLogging.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnClearLogging.setBounds(510, 22, 110, 21);
 		panelLogging.add(btnClearLogging);
