@@ -3,7 +3,6 @@
 <fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="java.lang.InterruptedException"/>
 <fullyQualifiedTypeName name="Comportamentos.Comportamentos"/>
-<fullyQualifiedTypeName name="Comportamentos.ISync"/>
 <fullyQualifiedTypeName name="Comportamentos.SyncSemaphore"/>
 <fullyQualifiedTypeName name="java.awt.Robot"/>
 <fullyQualifiedTypeName name="myRobot.myRobot"/>
@@ -12,4 +11,9 @@
 <fullyQualifiedTypeName name="java.lang.Thread"/>
 <fullyQualifiedTypeName name="java.lang.Integer"/>
 <fullyQualifiedTypeName name="Comportamentos.Vaguear"/>
+<fullyQualifiedTypeName name="Comportamentos.SyncMonitor"/>
+<fullyQualifiedTypeName name="Comportamentos.ISync"/>
+<fullyQualifiedTypeName name="soloLearn.gereThreads"/>
+<fullyQualifiedTypeName name="soloLearn.Thread1"/>
+<fullyQualifiedTypeName name="soloLearn.Thread2"/>
 </qualifiedTypeNameHistroy>

@@ -5,14 +5,16 @@ import java.util.Random;
 public abstract class Comportamentos extends Thread {
 
 	private String name;
+	private int time;
 	
-	private ISync actual, next;
+	private ISync actual;
 	
-	public Comportamentos(String name, ISync actual, ISync next) {
+	public Comportamentos(String name, ISync actual, int valor) {
 		super(name);
 		this.name = name;
 		this.actual = actual;
-		this.next = next;
+		this.time = valor;
+
 	}
 	
 	public void run() {
@@ -20,10 +22,10 @@ public abstract class Comportamentos extends Thread {
 			try {
 				this.actual.syncWait();
 				
-				Thread.sleep((new Random()).nextInt(250));
+				Thread.sleep((new Random()).nextInt(time));
 				System.out.print(this.name);
 				
-				this.next.syncSignal();
+				this.actual.syncSignal();
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
