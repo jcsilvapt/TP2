@@ -25,6 +25,8 @@ import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import Comportamentos.Comportamentos;
+import Comportamentos.Evitar;
 import Comportamentos.Vaguear;
 import myRobot.myRobot;
 
@@ -41,20 +43,21 @@ public class Gui extends Thread {
 	private JCheckBox chckbxCheckLogging;
 	private JCheckBox chckbxVaguear;
 	private JCheckBox chckbxEvitar;
-	private JCheckBox chckbxGestor;
+	private JCheckBox chckbxFugir;
 	private JButton btnConectar;
 	private JLabel lblConectado;
-	
+
 	// Texto pre-definidos
-	
+
 	private final String NOTCONNECTED = "Ligação ao Robot não iniciada...";
 
 	// Variaveis Globais
 	private String name;
 	private int offSetLeft, offSetRight, angle, distance, radius;
 	boolean robotOn;
-	
-	
+
+	Comportamentos vaguear, evitar, fugir;
+
 	// TEstes
 	Vaguear va;
 
@@ -94,13 +97,19 @@ public class Gui extends Thread {
 		this.txtDistance.setText(String.valueOf(distance));
 
 		robot = new myRobot();
+		
+		vaguear = new Vaguear("Vaguear", robot);
+		vaguear.start();
+		evitar = new Evitar("Evitar", robot, vaguear);
+		evitar.start();
 
 	}
 
 	/**
 	 * Método para Ligar/Desligar o ROBOT
+	 * @throws InterruptedException 
 	 */
-	private void connectRobot() {
+	private void connectRobot() throws InterruptedException {
 		if (robotOn) {
 			updateConnect(false);
 			robot.CloseEV3();
@@ -132,11 +141,13 @@ public class Gui extends Thread {
 	 * 
 	 * Método para alterar gráficamente a GUI.
 	 * 
-	 * @param value: - true = Altera gráficamente a GUI para indicar que a há
-	 *        Ligação ao Robot. - false = Altera gráficamente a GUI para indicar que
-	 *        não há Ligação ao Robot.
+	 * @param value:
+	 *            - true = Altera gráficamente a GUI para indicar que a há
+	 *            Ligação ao Robot. - false = Altera gráficamente a GUI para
+	 *            indicar que não há Ligação ao Robot.
+	 * @throws InterruptedException 
 	 */
-	private void updateConnect(boolean value) {
+	private void updateConnect(boolean value) throws InterruptedException {
 		if (value) {
 			btnConectar.setText("Desligar");
 			lblConectado.setBackground(Color.GREEN);
@@ -146,68 +157,69 @@ public class Gui extends Thread {
 			btnConectar.setText("Ligar");
 			lblConectado.setBackground(Color.red);
 			logger("Ligação ao Robot desligada com sucesso!");
+			vaguear.Stop();
+			evitar.Stop();
+			chckbxEvitar.setSelected(false);
+			chckbxVaguear.setSelected(false);
+			chckbxFugir.setSelected(false);
 			robotOn = false;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param backwards:
-	 * 		- False = Distnace value takes its integral value
-	 * 		- True = Distance value is negated
+	 *            - False = Distnace value takes its integral value - True =
+	 *            Distance value is negated
 	 */
 	private void move(boolean backwards) {
 		int dis = distance;
-		if(robotOn) {
-			if(backwards) {
+		if (robotOn) {
+			if (backwards) {
 				dis = dis * -1;
 			}
 			robot.Reta(dis);
-		}else {
+		} else {
 			logger(NOTCONNECTED);
 		}
 	}
-	
-	
+
 	/**
 	 * 
 	 * Método para fazer o Robot Virar...
 	 * 
 	 * @param right
-	 * 		- True - Virar a direita
-	 * 		- False - Virar a Esquerda
+	 *            - True - Virar a direita - False - Virar a Esquerda
 	 */
 	private void turn(boolean right) {
-		if(robotOn) {
-			if(right){
+		if (robotOn) {
+			if (right) {
 				robot.CurvarDireita(radius, angle);
-			}else {
+			} else {
 				robot.CurvarEsquerda(radius, angle);
 			}
 			robot.Parar(false);
-		}else {
+		} else {
 			logger(NOTCONNECTED);
 		}
 	}
-	
+
 	/**
-	 *  Método para PARA logo o robot.
+	 * Método para PARA logo o robot.
 	 */
 	private void stopMove() {
-		if(robotOn) {
+		if (robotOn) {
 			robot.Parar(true);
-		}else {
+		} else {
 			logger(NOTCONNECTED);
 		}
 	}
-	
-	
 
 	/**
 	 * Função que regista o texto no logger caso este esteja activo
 	 * 
 	 * @param text
-	 * 		- text - Texto para ser inserido no logger (gráfico)
+	 *            - text - Texto para ser inserido no logger (gráfico)
 	 */
 	public void logger(String text) {
 		if (txtrLogging.isEnabled()) {
@@ -293,7 +305,12 @@ public class Gui extends Thread {
 		btnConectar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				connectRobot();
+				try {
+					connectRobot();
+				} catch (InterruptedException e1) {
+
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnConectar.setToolTipText("Ligar Gestor");
@@ -461,6 +478,20 @@ public class Gui extends Thread {
 		panel.setLayout(null);
 
 		chckbxEvitar = new JCheckBox("Evitar");
+		chckbxEvitar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (chckbxEvitar.isSelected() && robotOn) {
+					evitar.Start();
+				} else {
+					try {
+						evitar.Stop();
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		chckbxEvitar.setBounds(6, 68, 81, 21);
 		panel.add(chckbxEvitar);
 		chckbxEvitar.setEnabled(true);
@@ -473,15 +504,16 @@ public class Gui extends Thread {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(!chckbxVaguear.isSelected()) {
-					chckbxVaguear.setSelected(true);
-					va = new Vaguear("Thread-1", null,null);
-					va.start();
-				}else {
-					chckbxVaguear.setEnabled(false);
-					va.destroy();
+				if (chckbxVaguear.isSelected() && robotOn) {
+					vaguear.Start();
+				} else {
+					try {
+						vaguear.Stop();
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
 				}
-				
+
 			}
 		});
 		chckbxVaguear.setBounds(6, 33, 81, 21);
@@ -491,12 +523,12 @@ public class Gui extends Thread {
 		chckbxVaguear.setForeground(Color.WHITE);
 		chckbxVaguear.setBackground(Color.BLACK);
 
-		chckbxGestor = new JCheckBox("Fugir");
-		chckbxGestor.setBounds(6, 105, 81, 21);
-		panel.add(chckbxGestor);
-		chckbxGestor.setForeground(Color.WHITE);
-		chckbxGestor.setBackground(Color.BLACK);
-		chckbxGestor.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		chckbxFugir = new JCheckBox("Fugir");
+		chckbxFugir.setBounds(6, 105, 81, 21);
+		panel.add(chckbxFugir);
+		chckbxFugir.setForeground(Color.WHITE);
+		chckbxFugir.setBackground(Color.BLACK);
+		chckbxFugir.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		JPanel panelLogging = new JPanel();
 		panelLogging
@@ -510,9 +542,9 @@ public class Gui extends Thread {
 		chckbxCheckLogging.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(chckbxCheckLogging.isSelected()) {
+				if (chckbxCheckLogging.isSelected()) {
 					txtrLogging.setEnabled(true);
-				}else{
+				} else {
 					txtrLogging.setEnabled(false);
 				}
 			}

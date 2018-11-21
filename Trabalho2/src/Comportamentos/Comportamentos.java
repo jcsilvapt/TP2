@@ -1,34 +1,42 @@
 package Comportamentos;
 
-import java.util.Random;
+import java.util.concurrent.Semaphore;
 
-public abstract class Comportamentos extends Thread {
-
-	private String name;
-	private int time;
+public class Comportamentos extends Thread {
 	
-	private ISync actual;
+	public enum Status {STOP, RUN};
 	
-	public Comportamentos(String name, ISync actual, int valor) {
-		super(name);
-		this.name = name;
-		this.actual = actual;
-		this.time = valor;
-
+	public String[] ACCOES = {"andar", "virar"};
+	
+	private Semaphore control = new Semaphore(0);
+	
+	public static Semaphore oEngTinhaRazao = new Semaphore(1);
+	
+	private Status currentStatus = Status.STOP;
+	
+	public Comportamentos(String ThreadName) {
+		super(ThreadName);
 	}
 	
-	public void run() {
-		for(;;) {
-			try {
-				this.actual.syncWait();
-				
-				Thread.sleep((new Random()).nextInt(time));
-				System.out.print(this.name);
-				
-				this.actual.syncSignal();
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+	public void Stop() throws InterruptedException {
+		currentStatus = Status.STOP;
 	}
+	
+	public void Start() {
+		control.release();
+	}
+	
+	public Status getStatus() {
+		return currentStatus;
+	}
+	
+	public Semaphore getControl() {
+		return control;
+	}
+	
+	protected void autoSuspend() throws InterruptedException {
+		control.acquire();
+		currentStatus = Status.RUN;
+	}
+	
 }

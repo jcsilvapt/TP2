@@ -28,7 +28,7 @@ public class HelloWorldVer05b extends Thread {
 				while (this.flag == false)
 					Thread.sleep(1);
 
-				System.out.println(" mundo");
+				System.out.println(this.name);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

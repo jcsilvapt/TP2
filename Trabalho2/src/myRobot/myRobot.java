@@ -18,11 +18,11 @@ public class myRobot {
 	}
 
 	public void CurvarDireita(int raio, int angulo) {
-		System.out.println("A virar " + angulo + " graus num raio de " + raio + ".");
+		System.out.println("A virar (direita)" + angulo + " graus num raio de " + raio + ".");
 	}
 
 	public void CurvarEsquerda(int raio, int angulo) {
-		System.out.println("A virar " + angulo + " graus num raio de " + raio + ".");
+		System.out.println("A virar (esquerda)" + angulo + " graus num raio de " + raio + ".");
 	}
 
 	public void Reta(int distancia) {
