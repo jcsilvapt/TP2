@@ -1,5 +1,7 @@
 package myRobot;
 
+import java.util.Random;
+
 public class myRobot {
 	private final String ROBOTNAME = "EV3";
 
@@ -66,5 +68,14 @@ public class myRobot {
 		}
 		return false;
 	}
-
+	
+	public static double SensorUS() {
+		Random rnd = new Random();
+		double sensor =  rnd.nextGaussian()*127.5+15;
+		return sensor;
+	}
+	
+	public static void main(String[] args){
+		System.out.println(SensorUS());
+	}
 }
