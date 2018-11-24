@@ -18,4 +18,12 @@ public class Utils {
 		delay = aux * convMs / convCm;
 		return delay;
 	}
+	
+	public static int convertionSpeed(int sensorValue) {
+		
+		int DEFAULTSPEED = 50;
+		int
+		
+		return 0;
+	}
 }

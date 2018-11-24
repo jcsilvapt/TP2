@@ -1,21 +1,15 @@
 package Comportamentos;
 
-import javax.rmi.CORBA.Util;
-
 import Utils.Utils;
 import myRobot.myRobot;
 
 public class Evitar extends Comportamentos {
 	
-	private String name;
 	private myRobot robot;
-	private Comportamentos vaguear;
 	
-	public Evitar(String ThreadName, myRobot robot, Comportamentos Vaguear) {
+	public Evitar(String ThreadName, myRobot robot) {
 		super(ThreadName);
-		this.name = ThreadName;
 		this.robot = robot;
-		this.vaguear = Vaguear;
 	}
 	
 	private boolean checkSensor() {

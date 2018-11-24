@@ -29,6 +29,9 @@ import Comportamentos.Comportamentos;
 import Comportamentos.Evitar;
 import Comportamentos.Vaguear;
 import myRobot.myRobot;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JCheckBoxMenuItem;
 
 public class Gui extends Thread {
 
@@ -62,6 +65,7 @@ public class Gui extends Thread {
 	Vaguear va;
 
 	myRobot robot;
+	private JCheckBoxMenuItem fugirSim;
 
 	public void run() {
 
@@ -95,7 +99,9 @@ public class Gui extends Thread {
 		this.txtRadius.setText(String.valueOf(radius));
 		this.txtAngle.setText(String.valueOf(angle));
 		this.txtDistance.setText(String.valueOf(distance));
-
+		
+		this.fugirSim.setEnabled(false);
+		
 		robot = new myRobot();
 		
 		vaguear = new Vaguear("Vaguear", robot);
@@ -153,6 +159,7 @@ public class Gui extends Thread {
 			lblConectado.setBackground(Color.GREEN);
 			logger("Ligação ao Robot Concluída com Sucesso!");
 			robotOn = true;
+			this.fugirSim.setEnabled(true);
 		} else {
 			btnConectar.setText("Ligar");
 			lblConectado.setBackground(Color.red);
@@ -163,6 +170,7 @@ public class Gui extends Thread {
 			chckbxVaguear.setSelected(false);
 			chckbxFugir.setSelected(false);
 			robotOn = false;
+			this.fugirSim.setEnabled(false);
 		}
 	}
 
@@ -254,7 +262,7 @@ public class Gui extends Thread {
 		frame.setTitle("..:FSO-TP1:..");
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(Color.BLACK);
-		frame.setBounds(100, 100, 656, 588);
+		frame.setBounds(100, 100, 658, 609);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
@@ -577,5 +585,14 @@ public class Gui extends Thread {
 		txtrLogging.setEditable(false);
 		txtrLogging.setLineWrap(true);
 		spLogging.setViewportView(txtrLogging);
+		
+		JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		JMenu mnHelpers = new JMenu("helpers");
+		menuBar.add(mnHelpers);
+		
+		fugirSim = new JCheckBoxMenuItem("Simulate RUN");
+		mnHelpers.add(fugirSim);
 	}
 }
