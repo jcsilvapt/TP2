@@ -19,11 +19,25 @@ public class Utils {
 		return delay;
 	}
 	
-	public static int convertionSpeed(int sensorValue) {
+	public static int convertionSpeed(int distance) {
 		
-		int DEFAULTSPEED = 50;
-		int
+		float x0, x1, x2, y0, y2;
+		float y1;
 		
-		return 0;
+		/**
+		 *  x0 = 50cm | y0 = 50%
+		 *  x1 = dist | y1 = x
+		 *  x2 = 0cm  | y2 = 75%
+		 */
+		
+ 		x0 = 50;
+		x1 = distance;
+		x2 = 0;
+		y0 = 50;
+		y2 = 75;
+		
+		y1 = ((x1-x0)/(x2-x0))*(y2-y0)+y0;
+		
+		return (int) y1;
 	}
 }

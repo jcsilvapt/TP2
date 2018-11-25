@@ -12,8 +12,7 @@ public class Fugir extends Comportamentos {
 
 	private final int DELAY = 250;
 	private final int SAFEDISTANCE = 100;
-	private final int SAFESPEED = 75; // Valores precentuais
-	private final int NORMALSPEED = 50; // Valores precentuais
+	private final int MINDISTANCE  = 50;
 	private int[] Storage = new int[3];
 	private int count = 0;
 
@@ -23,7 +22,7 @@ public class Fugir extends Comportamentos {
 		this.vaguear = Vaguear;
 	}
 
-	private void executeRun() throws InterruptedException {
+	private void executeRun() {
 		int sensorValue = robot.SensorUS();
 		if(sensorValue <= SAFEDISTANCE) {
 			System.out.println(sensorValue);
@@ -32,9 +31,17 @@ public class Fugir extends Comportamentos {
 		}
 		if(count == 2) {
 			Arrays.sort(Storage);
-			if(Storage[1] <= SAFEDISTANCE) {
-				vaguear.Stop();
-				
+			if(Storage[1] > Storage[0] && Storage[1] < Storage[2] && Storage[1] <= MINDISTANCE) {
+				try {
+					vaguear.Stop();
+					robot.SetVelocidade(Utils.Utils.convertionSpeed(Storage[1]));
+					robot.Reta(Storage[1]+5);
+					robot.SetVelocidade(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} finally {
+					vaguear.Start();
+				}
 			}
 			count = 0;
 		}

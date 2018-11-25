@@ -13,14 +13,15 @@
 <fullyQualifiedTypeName name="Comportamentos.SyncSemaphore"/>
 <fullyQualifiedTypeName name="Comportamentos.Comportamentos.Status"/>
 <fullyQualifiedTypeName name="javax.rmi.CORBA.Util"/>
-<fullyQualifiedTypeName name="Utils.Utils"/>
 <fullyQualifiedTypeName name="java.util.concurrent.Semaphore"/>
 <fullyQualifiedTypeName name="java.lang.InterruptedException"/>
 <fullyQualifiedTypeName name="myRobot.myRobot"/>
-<fullyQualifiedTypeName name="Comportamentos.Vaguear"/>
 <fullyQualifiedTypeName name="java.io.SequenceInputStream"/>
 <fullyQualifiedTypeName name="java.lang.Thread"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="Comportamentos.Comportamentos"/>
+<fullyQualifiedTypeName name="Comportamentos.Vaguear"/>
+<fullyQualifiedTypeName name="java.awt.LinearGradientPaint"/>
+<fullyQualifiedTypeName name="Utils.Utils"/>
 </qualifiedTypeNameHistroy>

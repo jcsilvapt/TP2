@@ -106,7 +106,7 @@ public class Gui extends Thread {
 		
 		vaguear = new Vaguear("Vaguear", robot);
 		vaguear.start();
-		evitar = new Evitar("Evitar", robot, vaguear);
+		evitar = new Evitar("Evitar", robot);
 		evitar.start();
 
 	}
