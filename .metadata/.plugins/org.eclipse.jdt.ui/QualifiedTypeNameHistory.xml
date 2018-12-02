@@ -13,8 +13,6 @@
 <fullyQualifiedTypeName name="Comportamentos.SyncSemaphore"/>
 <fullyQualifiedTypeName name="Comportamentos.Comportamentos.Status"/>
 <fullyQualifiedTypeName name="javax.rmi.CORBA.Util"/>
-<fullyQualifiedTypeName name="java.util.concurrent.Semaphore"/>
-<fullyQualifiedTypeName name="java.lang.InterruptedException"/>
 <fullyQualifiedTypeName name="myRobot.myRobot"/>
 <fullyQualifiedTypeName name="java.io.SequenceInputStream"/>
 <fullyQualifiedTypeName name="java.lang.Thread"/>
@@ -24,4 +22,7 @@
 <fullyQualifiedTypeName name="Comportamentos.Vaguear"/>
 <fullyQualifiedTypeName name="java.awt.LinearGradientPaint"/>
 <fullyQualifiedTypeName name="Utils.Utils"/>
+<fullyQualifiedTypeName name="Comportamentos.Fugir.runStatus"/>
+<fullyQualifiedTypeName name="java.util.concurrent.Semaphore"/>
+<fullyQualifiedTypeName name="java.lang.InterruptedException"/>
 </qualifiedTypeNameHistroy>

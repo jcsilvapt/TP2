@@ -19,6 +19,10 @@ public class Utils {
 		return delay;
 	}
 	
+	public static int diferential(int actualDistance, int initialDistance) {
+		return actualDistance - initialDistance;
+	}
+	
 	public static int convertionSpeed(int distance) {
 		
 		float x0, x1, x2, y0, y2;

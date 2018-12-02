@@ -1,5 +1,3 @@
-package GUI;
-
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
@@ -11,6 +9,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -24,14 +23,6 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-
-import Comportamentos.Comportamentos;
-import Comportamentos.Evitar;
-import Comportamentos.Vaguear;
-import myRobot.myRobot;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JCheckBoxMenuItem;
 
 public class Gui extends Thread {
 
@@ -61,11 +52,10 @@ public class Gui extends Thread {
 
 	Comportamentos vaguear, evitar, fugir;
 
-	// TEstes
-	Vaguear va;
-
-	myRobot robot;
-	private JCheckBoxMenuItem fugirSim;
+	//myRobot robot;
+	private RobotLegoEV3 robot;
+	
+	private Semaphore oEngTinhaRazao;
 
 	public void run() {
 
@@ -100,14 +90,18 @@ public class Gui extends Thread {
 		this.txtAngle.setText(String.valueOf(angle));
 		this.txtDistance.setText(String.valueOf(distance));
 		
-		this.fugirSim.setEnabled(false);
+		this.robot = new RobotLegoEV3();
 		
-		robot = new myRobot();
+		this.oEngTinhaRazao = new Semaphore( 1 );
 		
-		vaguear = new Vaguear("Vaguear", robot);
-		vaguear.start();
-		evitar = new Evitar("Evitar", robot);
-		evitar.start();
+		this.vaguear = new Vaguear("Vaguear", this.oEngTinhaRazao, this.robot);
+		this.vaguear.start();
+		
+		this.evitar = new Evitar("Evitar", this.oEngTinhaRazao, this.robot);
+		this.evitar.start();
+		
+		this.fugir = new Fugir("Fugir", this.oEngTinhaRazao, this.robot, this.vaguear);
+		this.fugir.start();
 
 	}
 
@@ -159,7 +153,6 @@ public class Gui extends Thread {
 			lblConectado.setBackground(Color.GREEN);
 			logger("Ligação ao Robot Concluída com Sucesso!");
 			robotOn = true;
-			this.fugirSim.setEnabled(true);
 		} else {
 			btnConectar.setText("Ligar");
 			lblConectado.setBackground(Color.red);
@@ -170,7 +163,6 @@ public class Gui extends Thread {
 			chckbxVaguear.setSelected(false);
 			chckbxFugir.setSelected(false);
 			robotOn = false;
-			this.fugirSim.setEnabled(false);
 		}
 	}
 
@@ -187,6 +179,7 @@ public class Gui extends Thread {
 				dis = dis * -1;
 			}
 			robot.Reta(dis);
+			robot.Parar(false);
 		} else {
 			logger(NOTCONNECTED);
 		}
@@ -262,7 +255,7 @@ public class Gui extends Thread {
 		frame.setTitle("..:FSO-TP1:..");
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(Color.BLACK);
-		frame.setBounds(100, 100, 658, 609);
+		frame.setBounds(100, 100, 658, 585);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
@@ -509,14 +502,15 @@ public class Gui extends Thread {
 
 		chckbxVaguear = new JCheckBox("Vaguear");
 		chckbxVaguear.addMouseListener(new MouseAdapter() {
-			@SuppressWarnings("deprecation")
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (chckbxVaguear.isSelected() && robotOn) {
 					vaguear.Start();
+					vaguear.setIsRunning(true);
 				} else {
 					try {
 						vaguear.Stop();
+						vaguear.setIsRunning(false);
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					}
@@ -532,6 +526,20 @@ public class Gui extends Thread {
 		chckbxVaguear.setBackground(Color.BLACK);
 
 		chckbxFugir = new JCheckBox("Fugir");
+		chckbxFugir.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (chckbxFugir.isSelected() && robotOn) {
+					fugir.Start();
+				} else {
+					try {
+						fugir.Stop();
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		chckbxFugir.setBounds(6, 105, 81, 21);
 		panel.add(chckbxFugir);
 		chckbxFugir.setForeground(Color.WHITE);
@@ -585,14 +593,5 @@ public class Gui extends Thread {
 		txtrLogging.setEditable(false);
 		txtrLogging.setLineWrap(true);
 		spLogging.setViewportView(txtrLogging);
-		
-		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
-		
-		JMenu mnHelpers = new JMenu("helpers");
-		menuBar.add(mnHelpers);
-		
-		fugirSim = new JCheckBoxMenuItem("Simulate RUN");
-		mnHelpers.add(fugirSim);
 	}
 }
