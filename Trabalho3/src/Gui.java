@@ -25,6 +25,12 @@ import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import Utils.Reader;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JCheckBoxMenuItem;
+
 public class Gui extends Thread {
 
 	private JFrame frame;
@@ -58,7 +64,8 @@ public class Gui extends Thread {
 	private Semaphore oEngTinhaRazao;
 	
 	// Ficheiros
-
+	private Reader fileConfig;
+	private Reader fileActions;
 
 	/**
 	 * Launch the application.
@@ -261,7 +268,7 @@ public class Gui extends Thread {
 		frame.setTitle("..:FSO-TP1:..");
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(Color.BLACK);
-		frame.setBounds(100, 100, 658, 585);
+		frame.setBounds(100, 100, 658, 610);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
@@ -599,5 +606,17 @@ public class Gui extends Thread {
 		txtrLogging.setEditable(false);
 		txtrLogging.setLineWrap(true);
 		spLogging.setViewportView(txtrLogging);
+		
+		JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		JMenu btnOptions = new JMenu("Op\u00E7\u00F5es");
+		menuBar.add(btnOptions);
+		
+		JMenuItem mntmGravar = new JMenuItem("Gravar");
+		btnOptions.add(mntmGravar);
+		
+		JMenuItem mntmCarregar = new JMenuItem("Carregar");
+		btnOptions.add(mntmCarregar);
 	}
 }

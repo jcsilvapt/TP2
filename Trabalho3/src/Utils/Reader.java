@@ -19,8 +19,6 @@ public class Reader {
 		file = new File(path);
 		absolutePath = file.getAbsolutePath();
 		fileName = file.getName();
-		
-		System.out.println("Reader Pronto");
 	}
 	
 	public String getAbsolutePath() {
