@@ -52,9 +52,9 @@ public class Gui extends Thread {
 
 	Comportamentos vaguear, evitar, fugir;
 
-	//myRobot robot;
+	// myRobot robot;
 	private RobotLegoEV3 robot;
-	
+
 	private Semaphore oEngTinhaRazao;
 
 	public void run() {
@@ -89,17 +89,17 @@ public class Gui extends Thread {
 		this.txtRadius.setText(String.valueOf(radius));
 		this.txtAngle.setText(String.valueOf(angle));
 		this.txtDistance.setText(String.valueOf(distance));
-		
+
 		this.robot = new RobotLegoEV3();
-		
-		this.oEngTinhaRazao = new Semaphore( 1 );
-		
+
+		this.oEngTinhaRazao = new Semaphore(1);
+
 		this.vaguear = new Vaguear("Vaguear", this.oEngTinhaRazao, this.robot);
 		this.vaguear.start();
-		
+
 		this.evitar = new Evitar("Evitar", this.oEngTinhaRazao, this.robot);
 		this.evitar.start();
-		
+
 		this.fugir = new Fugir("Fugir", this.oEngTinhaRazao, this.robot, this.vaguear);
 		this.fugir.start();
 
@@ -107,7 +107,8 @@ public class Gui extends Thread {
 
 	/**
 	 * Método para Ligar/Desligar o ROBOT
-	 * @throws InterruptedException 
+	 * 
+	 * @throws InterruptedException
 	 */
 	private void connectRobot() throws InterruptedException {
 		if (robotOn) {
@@ -145,7 +146,7 @@ public class Gui extends Thread {
 	 *            - true = Altera gráficamente a GUI para indicar que a há
 	 *            Ligação ao Robot. - false = Altera gráficamente a GUI para
 	 *            indicar que não há Ligação ao Robot.
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	private void updateConnect(boolean value) throws InterruptedException {
 		if (value) {

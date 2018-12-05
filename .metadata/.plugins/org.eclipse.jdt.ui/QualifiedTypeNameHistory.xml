@@ -34,4 +34,5 @@
 <fullyQualifiedTypeName name="java.io.BufferedWriter"/>
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="Utils.Reader"/>
+<fullyQualifiedTypeName name="Gui"/>
 </qualifiedTypeNameHistroy>

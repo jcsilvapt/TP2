@@ -17,7 +17,7 @@ public class Vaguear extends Comportamentos {
 		super(ThreadName, oEngTinhaRazao, robot);
 	}
 
-	private void randomMove() throws InterruptedException {
+	private void randomMove() {
 		int delay = 0;
 		try {
 			oEngTinhaRazao.acquire();
@@ -52,7 +52,12 @@ public class Vaguear extends Comportamentos {
 			e.printStackTrace();
 		} finally {
 			oEngTinhaRazao.release();
-			Thread.sleep(delay);
+			try {
+				Thread.sleep(delay);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -66,11 +71,7 @@ public class Vaguear extends Comportamentos {
 					e.printStackTrace();
 				}
 			}
-			try {
-				randomMove();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			randomMove();
 		}
 	}
 
