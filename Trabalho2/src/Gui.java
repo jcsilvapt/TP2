@@ -52,7 +52,7 @@ public class Gui extends Thread {
 
 	Comportamentos vaguear, evitar, fugir;
 
-	// myRobot robot;
+	//private myRobot robot;
 	private RobotLegoEV3 robot;
 
 	private Semaphore oEngTinhaRazao;
@@ -89,7 +89,8 @@ public class Gui extends Thread {
 		this.txtRadius.setText(String.valueOf(radius));
 		this.txtAngle.setText(String.valueOf(angle));
 		this.txtDistance.setText(String.valueOf(distance));
-
+		
+		//this.robot = new myRobot();
 		this.robot = new RobotLegoEV3();
 
 		this.oEngTinhaRazao = new Semaphore(1);

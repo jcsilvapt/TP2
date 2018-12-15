@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.ComponentOrientation;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +9,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JButton;
@@ -25,11 +26,10 @@ import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import Utils.Reader;
+import Utils.myFile;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JMenu;
-import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
 
 public class Gui extends Thread {
 
@@ -59,28 +59,24 @@ public class Gui extends Thread {
 
 	Comportamentos vaguear, evitar, fugir;
 
-	//myRobot robot;
 	private RobotLegoEV3 robot;
+	//private RobotLegoEV3 robot;
+
 	private Semaphore oEngTinhaRazao;
 	
-	// Ficheiros
-	private Reader fileConfig;
-	private Reader fileActions;
+	private myFile file;
+
+	public void run() {
+
+	}
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Gui window = new Gui();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		Gui window = new Gui();
+		window.frame.setVisible(true);
+		window.start();
 	}
 
 	/**
@@ -103,16 +99,17 @@ public class Gui extends Thread {
 		this.txtAngle.setText(String.valueOf(angle));
 		this.txtDistance.setText(String.valueOf(distance));
 		
+		//this.robot = new myRobot();
 		this.robot = new RobotLegoEV3();
-		
-		this.oEngTinhaRazao = new Semaphore( 1 );
-		
+
+		this.oEngTinhaRazao = new Semaphore(1);
+
 		this.vaguear = new Vaguear("Vaguear", this.oEngTinhaRazao, this.robot);
 		this.vaguear.start();
-		
+
 		this.evitar = new Evitar("Evitar", this.oEngTinhaRazao, this.robot);
 		this.evitar.start();
-		
+
 		this.fugir = new Fugir("Fugir", this.oEngTinhaRazao, this.robot, this.vaguear);
 		this.fugir.start();
 
@@ -120,7 +117,8 @@ public class Gui extends Thread {
 
 	/**
 	 * Método para Ligar/Desligar o ROBOT
-	 * @throws InterruptedException 
+	 * 
+	 * @throws InterruptedException
 	 */
 	private void connectRobot() throws InterruptedException {
 		if (robotOn) {
@@ -158,7 +156,7 @@ public class Gui extends Thread {
 	 *            - true = Altera gráficamente a GUI para indicar que a há
 	 *            Ligação ao Robot. - false = Altera gráficamente a GUI para
 	 *            indicar que não há Ligação ao Robot.
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	private void updateConnect(boolean value) throws InterruptedException {
 		if (value) {
@@ -250,6 +248,21 @@ public class Gui extends Thread {
 			txtrLogging.setText("");
 		}
 	}
+	
+	private void autoLoadConfiguration(String robotName) {
+		System.out.println("I'm probably working");
+		try {
+			file = new myFile(robotName+".txt");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			System.out.println(Arrays.toString(file.read()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+}
 
 	/**
 	 * Create the application.
@@ -268,7 +281,7 @@ public class Gui extends Thread {
 		frame.setTitle("..:FSO-TP1:..");
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(Color.BLACK);
-		frame.setBounds(100, 100, 658, 610);
+		frame.setBounds(100, 100, 658, 585);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
@@ -295,6 +308,7 @@ public class Gui extends Thread {
 				name = txtNomeRobot.getText();
 				if (name.length() > 0) {
 					txtNomeRobot.setBackground(Color.WHITE);
+					autoLoadConfiguration(name);
 				}
 			}
 		});
@@ -303,6 +317,7 @@ public class Gui extends Thread {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
 					name = txtNomeRobot.getText();
+					autoLoadConfiguration(name);
 					if (name.length() > 0) {
 						txtNomeRobot.setBackground(Color.WHITE);
 					}
@@ -610,13 +625,13 @@ public class Gui extends Thread {
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
-		JMenu btnOptions = new JMenu("Op\u00E7\u00F5es");
-		menuBar.add(btnOptions);
+		JMenu mnMore = new JMenu("More");
+		menuBar.add(mnMore);
 		
-		JMenuItem mntmGravar = new JMenuItem("Gravar");
-		btnOptions.add(mntmGravar);
+		JMenuItem mntmGravarConfiguraes = new JMenuItem("Gravar Configura\u00E7\u00F5es ...");
+		mnMore.add(mntmGravarConfiguraes);
 		
-		JMenuItem mntmCarregar = new JMenuItem("Carregar");
-		btnOptions.add(mntmCarregar);
+		JMenuItem mntmCarregarConfiguraes = new JMenuItem("Carregar Configura\u00E7\u00F5es ...");
+		mnMore.add(mntmCarregarConfiguraes);
 	}
 }
