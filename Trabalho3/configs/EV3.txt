@@ -1,0 +1,3 @@
+nome=Jorge
+op1=DASD
+op2=Ze

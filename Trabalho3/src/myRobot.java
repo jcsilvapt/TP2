@@ -1,9 +1,9 @@
-package myRobot;
+
 
 
 import java.util.Random;
 
-public class myRobot {
+public class myRobot  {
 	private final String ROBOTNAME = "EV3";
 	
 	private final int MAXDISTANCE = 255;

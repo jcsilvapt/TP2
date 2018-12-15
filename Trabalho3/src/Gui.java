@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
@@ -9,14 +10,19 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -27,9 +33,6 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import Utils.myFile;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 public class Gui extends Thread {
 
@@ -59,12 +62,13 @@ public class Gui extends Thread {
 
 	Comportamentos vaguear, evitar, fugir;
 
-	private RobotLegoEV3 robot;
-	//private RobotLegoEV3 robot;
+	private myRobot robot;
+	// private RobotLegoEV3 robot;
 
 	private Semaphore oEngTinhaRazao;
-	
+
 	private myFile file;
+	private File f;
 
 	public void run() {
 
@@ -98,20 +102,20 @@ public class Gui extends Thread {
 		this.txtRadius.setText(String.valueOf(radius));
 		this.txtAngle.setText(String.valueOf(angle));
 		this.txtDistance.setText(String.valueOf(distance));
-		
-		//this.robot = new myRobot();
-		this.robot = new RobotLegoEV3();
+
+		this.robot = new myRobot();
+		// this.robot = new RobotLegoEV3();
 
 		this.oEngTinhaRazao = new Semaphore(1);
 
-		this.vaguear = new Vaguear("Vaguear", this.oEngTinhaRazao, this.robot);
-		this.vaguear.start();
-
-		this.evitar = new Evitar("Evitar", this.oEngTinhaRazao, this.robot);
-		this.evitar.start();
-
-		this.fugir = new Fugir("Fugir", this.oEngTinhaRazao, this.robot, this.vaguear);
-		this.fugir.start();
+//		this.vaguear = new Vaguear("Vaguear", this.oEngTinhaRazao, this.robot);
+//		this.vaguear.start();
+//
+//		this.evitar = new Evitar("Evitar", this.oEngTinhaRazao, this.robot);
+//		this.evitar.start();
+//
+//		this.fugir = new Fugir("Fugir", this.oEngTinhaRazao, this.robot, this.vaguear);
+//		this.fugir.start();
 
 	}
 
@@ -152,10 +156,9 @@ public class Gui extends Thread {
 	 * 
 	 * Método para alterar gráficamente a GUI.
 	 * 
-	 * @param value:
-	 *            - true = Altera gráficamente a GUI para indicar que a há
-	 *            Ligação ao Robot. - false = Altera gráficamente a GUI para
-	 *            indicar que não há Ligação ao Robot.
+	 * @param value: - true = Altera gráficamente a GUI para indicar que a há
+	 *        Ligação ao Robot. - false = Altera gráficamente a GUI para indicar que
+	 *        não há Ligação ao Robot.
 	 * @throws InterruptedException
 	 */
 	private void updateConnect(boolean value) throws InterruptedException {
@@ -179,9 +182,8 @@ public class Gui extends Thread {
 
 	/**
 	 * 
-	 * @param backwards:
-	 *            - False = Distnace value takes its integral value - True =
-	 *            Distance value is negated
+	 * @param backwards: - False = Distnace value takes its integral value - True =
+	 *        Distance value is negated
 	 */
 	private void move(boolean backwards) {
 		int dis = distance;
@@ -200,8 +202,7 @@ public class Gui extends Thread {
 	 * 
 	 * Método para fazer o Robot Virar...
 	 * 
-	 * @param right
-	 *            - True - Virar a direita - False - Virar a Esquerda
+	 * @param right - True - Virar a direita - False - Virar a Esquerda
 	 */
 	private void turn(boolean right) {
 		if (robotOn) {
@@ -230,8 +231,7 @@ public class Gui extends Thread {
 	/**
 	 * Função que regista o texto no logger caso este esteja activo
 	 * 
-	 * @param text
-	 *            - text - Texto para ser inserido no logger (gráfico)
+	 * @param text - text - Texto para ser inserido no logger (gráfico)
 	 */
 	public void logger(String text) {
 		if (txtrLogging.isEnabled()) {
@@ -248,21 +248,72 @@ public class Gui extends Thread {
 			txtrLogging.setText("");
 		}
 	}
-	
+
 	private void autoLoadConfiguration(String robotName) {
-		System.out.println("I'm probably working");
 		try {
-			file = new myFile(robotName+".txt");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
+			file = new myFile(robotName, true);
 			System.out.println(Arrays.toString(file.read()));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				file.closeChannel();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-}
+	}
+
+	private void saveConfigurations() {
+		try {
+			System.out.println(this.name);
+			file = new myFile(this.name, false);
+
+			file.write("robotName=" + this.name);
+			file.write("offSetLeft="+this.offSetLeft);
+			file.write("offSetRight="+this.offSetRight);
+			file.write("angle="+this.angle);
+			file.write("distance="+this.distance);
+			file.write("radius="+this.radius);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				file.closeChannel();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void readConfigurations() {
+		JFileChooser fc = new JFileChooser();
+		File dir = new File(System.getProperty("user.dir"));
+		fc.setCurrentDirectory(dir);
+		fc.setDialogTitle("Escolha uma configuração");
+		int returnVal = fc.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			f = fc.getSelectedFile();
+			try {
+				file = new myFile(f.getName().substring(0, f.getName().lastIndexOf(".")), true);
+				setConfinguration(file.read());
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					file.closeChannel();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
+	private void setConfinguration(String[] value) {
+			System.out.println(Arrays.toString(value));
+
+	}
 
 	/**
 	 * Create the application.
@@ -281,7 +332,7 @@ public class Gui extends Thread {
 		frame.setTitle("..:FSO-TP1:..");
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(Color.BLACK);
-		frame.setBounds(100, 100, 658, 585);
+		frame.setBounds(100, 100, 653, 605);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
@@ -308,7 +359,6 @@ public class Gui extends Thread {
 				name = txtNomeRobot.getText();
 				if (name.length() > 0) {
 					txtNomeRobot.setBackground(Color.WHITE);
-					autoLoadConfiguration(name);
 				}
 			}
 		});
@@ -621,17 +671,27 @@ public class Gui extends Thread {
 		txtrLogging.setEditable(false);
 		txtrLogging.setLineWrap(true);
 		spLogging.setViewportView(txtrLogging);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-		
+
 		JMenu mnMore = new JMenu("More");
 		menuBar.add(mnMore);
-		
+
 		JMenuItem mntmGravarConfiguraes = new JMenuItem("Gravar Configura\u00E7\u00F5es ...");
+		mntmGravarConfiguraes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveConfigurations();
+			}
+		});
 		mnMore.add(mntmGravarConfiguraes);
-		
+
 		JMenuItem mntmCarregarConfiguraes = new JMenuItem("Carregar Configura\u00E7\u00F5es ...");
+		mntmCarregarConfiguraes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				readConfigurations();
+			}
+		});
 		mnMore.add(mntmCarregarConfiguraes);
 	}
 }
