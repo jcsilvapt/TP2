@@ -1,6 +1,0 @@
-robotName=ASDASD
-offSetLeft=0
-offSetRight=0
-angle=90
-distance=20
-radius=10

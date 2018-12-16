@@ -23,10 +23,9 @@ public class myFile {
 
 	public myFile(String fileName, boolean isToRead) throws IOException {
 		this.isToRead = isToRead;
-		file = new File(DEFAULTPATH + fileName + ".txt");
+		file = new File(fileName + ".txt");
 		if (this.isToRead) {
-			if (!file.exists()) {
-				System.out.println("OH");
+			if (file.exists()) {
 				input = new FileInputStream(DEFAULTPATH + fileName + ".txt");
 			} else {
 				input = new FileInputStream(DEFAULTPATH + DEFAULTCONFIG + ".txt");
@@ -54,7 +53,6 @@ public class myFile {
 				fi += temp;
 			}
 		}
-		System.out.println(values.toString());
 		String[] toReturn = values.toArray(new String[values.size()]);
  		return toReturn;
 	}

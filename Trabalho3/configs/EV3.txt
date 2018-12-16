@@ -1,3 +1,6 @@
-nome=Jorge
-op1=DASD
-op2=Ze
+robotName=EV3
+offSetLeft=0
+offSetRight=0
+angle=90
+distance=20
+radius=10

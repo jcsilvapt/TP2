@@ -12,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JButton;
@@ -91,9 +90,9 @@ public class Gui extends Thread {
 		this.name = ""; // default - EV3
 		this.offSetLeft = 0;
 		this.offSetRight = 0;
-		this.angle = 90;
-		this.distance = 20;
-		this.radius = 10;
+		this.angle = 0;
+		this.distance = 0;
+		this.radius = 0;
 		this.robotOn = false;
 
 		this.txtNomeRobot.setText(name);
@@ -165,16 +164,20 @@ public class Gui extends Thread {
 		if (value) {
 			btnConectar.setText("Desligar");
 			lblConectado.setBackground(Color.GREEN);
+			txtNomeRobot.setEditable(false);
+			txtNomeRobot.setForeground(Color.gray);
 			logger("Ligação ao Robot Concluída com Sucesso!");
 			robotOn = true;
 		} else {
 			btnConectar.setText("Ligar");
 			lblConectado.setBackground(Color.red);
 			logger("Ligação ao Robot desligada com sucesso!");
-			vaguear.Stop();
-			evitar.Stop();
+//			vaguear.Stop();
+//			evitar.Stop();
 			chckbxEvitar.setSelected(false);
 			chckbxVaguear.setSelected(false);
+			txtNomeRobot.setEditable(true);
+			txtNomeRobot.setForeground(Color.black);
 			chckbxFugir.setSelected(false);
 			robotOn = false;
 		}
@@ -252,7 +255,7 @@ public class Gui extends Thread {
 	private void autoLoadConfiguration(String robotName) {
 		try {
 			file = new myFile(robotName, true);
-			System.out.println(Arrays.toString(file.read()));
+			setConfinguration(file.read());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -266,7 +269,6 @@ public class Gui extends Thread {
 
 	private void saveConfigurations() {
 		try {
-			System.out.println(this.name);
 			file = new myFile(this.name, false);
 
 			file.write("robotName=" + this.name);
@@ -311,8 +313,39 @@ public class Gui extends Thread {
 	}
 	
 	private void setConfinguration(String[] value) {
-			System.out.println(Arrays.toString(value));
-
+		for(int i = 0; i < value.length; i++) {
+			String action = value[i].substring(0, value[i].lastIndexOf("="));
+			String aValue = value[i].substring(value[i].lastIndexOf("=")+1);
+			switch (action) {
+			case "robotName":
+				this.name = aValue;
+				this.txtNomeRobot.setText(aValue);
+				break;
+			case "offSetLeft":
+				this.offSetLeft = Integer.parseInt(aValue);
+				this.txtOffsetLeft.setText(aValue);
+				break;
+			case "offSetRight":
+				this.offSetRight = Integer.parseInt(aValue);
+				this.txtOffsetRight.setText(aValue);
+				break;
+			case "angle":
+				this.angle = Integer.parseInt(aValue);
+				this.txtAngle.setText(aValue);
+				break;
+			case "distance":
+				this.distance = Integer.parseInt(aValue);
+				this.txtDistance.setText(aValue);
+				break;
+			case "radius":
+				this.radius = Integer.parseInt(aValue);
+				this.txtRadius.setText(aValue);
+				break;
+			default:
+				break;
+			}
+		}
+		logger("Definições carregadas com sucesso...");
 	}
 
 	/**
