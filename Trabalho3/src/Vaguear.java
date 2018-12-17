@@ -13,7 +13,7 @@ public class Vaguear extends Comportamentos {
 
 	private String[] ACCOES = { "andar", "virar" };
 
-	public Vaguear(String ThreadName, Semaphore oEngTinhaRazao, RobotLegoEV3 robot) {
+	public Vaguear(String ThreadName, Semaphore oEngTinhaRazao, myRobot robot) {
 		super(ThreadName, oEngTinhaRazao, robot);
 	}
 

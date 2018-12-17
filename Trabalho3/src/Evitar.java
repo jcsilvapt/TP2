@@ -6,14 +6,14 @@ import Utils.Utils;
 
 public class Evitar extends Comportamentos {
 
-	public Evitar(String ThreadName, Semaphore oEngTinhaRazao, RobotLegoEV3 robot) {
+	public Evitar(String ThreadName, Semaphore oEngTinhaRazao, myRobot robot) {
 		super(ThreadName, oEngTinhaRazao, robot);
 	}
 	
 	private int checkSensor() {
 		//try {
 		//	oEngTinhaRazao.acquire();
-				return robot.SensorToque(1);
+				return robot.SensorToque();
 		//} finally {
 		//	oEngTinhaRazao.release();
 		//}

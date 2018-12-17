@@ -23,16 +23,17 @@ public class myFile {
 
 	public myFile(String fileName, boolean isToRead) throws IOException {
 		this.isToRead = isToRead;
-		file = new File(fileName + ".txt");
+		file = new File(DEFAULTPATH+fileName + ".txt");
+		System.out.println(file.getAbsolutePath());
 		if (this.isToRead) {
 			if (file.exists()) {
 				input = new FileInputStream(DEFAULTPATH + fileName + ".txt");
 			} else {
-				input = new FileInputStream(DEFAULTPATH + DEFAULTCONFIG + ".txt");
+				input = new FileInputStream(DEFAULTPATH + "temp" + ".txt");
 			}
 		} else {
 			System.out.println("1212");
-			if(!file.exists()) {
+			if (!file.exists()) {
 				file.createNewFile();
 			}
 			output = new FileOutputStream(DEFAULTPATH + fileName + ".txt");
@@ -54,7 +55,7 @@ public class myFile {
 			}
 		}
 		String[] toReturn = values.toArray(new String[values.size()]);
- 		return toReturn;
+		return toReturn;
 	}
 
 	public void write(String phrase) throws IOException {

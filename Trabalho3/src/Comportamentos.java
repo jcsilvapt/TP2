@@ -4,7 +4,7 @@ import java.util.concurrent.Semaphore;
 
 public class Comportamentos extends Thread {
 	
-	protected final RobotLegoEV3 robot;
+	protected final myRobot robot;
 	
 	public enum Status {STOP, RUN};
 	
@@ -16,7 +16,7 @@ public class Comportamentos extends Thread {
 	
 	protected boolean isItRunning = false;
 	
-	public Comportamentos(String ThreadName, Semaphore oEngTinhaRazao, RobotLegoEV3 robot) {
+	public Comportamentos(String ThreadName, Semaphore oEngTinhaRazao, myRobot robot) {
 		super(ThreadName);
 		
 		this.oEngTinhaRazao = oEngTinhaRazao;

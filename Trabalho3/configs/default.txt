@@ -1,4 +1,4 @@
-robotName=EV3
+robotName=SOUDEFAULT
 offSetLeft=0
 offSetRight=0
 angle=90

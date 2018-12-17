@@ -32,10 +32,12 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import Utils.myFile;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class Gui extends Thread {
 
-	private JFrame frame;
+	private JFrame frmfsotp;
 	private JTextField txtNomeRobot;
 	private JTextField txtDistance;
 	private JTextField txtAngle;
@@ -61,13 +63,13 @@ public class Gui extends Thread {
 
 	Comportamentos vaguear, evitar, fugir;
 
-	private myRobot robot;
-	// private RobotLegoEV3 robot;
+	private RobotPlayer robot;
 
 	private Semaphore oEngTinhaRazao;
 
 	private myFile file;
 	private File f;
+	private JComboBox comboBox;
 
 	public void run() {
 
@@ -78,7 +80,7 @@ public class Gui extends Thread {
 	 */
 	public static void main(String[] args) {
 		Gui window = new Gui();
-		window.frame.setVisible(true);
+		window.frmfsotp.setVisible(true);
 		window.start();
 	}
 
@@ -102,19 +104,7 @@ public class Gui extends Thread {
 		this.txtAngle.setText(String.valueOf(angle));
 		this.txtDistance.setText(String.valueOf(distance));
 
-		this.robot = new myRobot();
-		// this.robot = new RobotLegoEV3();
-
 		this.oEngTinhaRazao = new Semaphore(1);
-
-//		this.vaguear = new Vaguear("Vaguear", this.oEngTinhaRazao, this.robot);
-//		this.vaguear.start();
-//
-//		this.evitar = new Evitar("Evitar", this.oEngTinhaRazao, this.robot);
-//		this.evitar.start();
-//
-//		this.fugir = new Fugir("Fugir", this.oEngTinhaRazao, this.robot, this.vaguear);
-//		this.fugir.start();
 
 	}
 
@@ -126,19 +116,30 @@ public class Gui extends Thread {
 	private void connectRobot() throws InterruptedException {
 		if (robotOn) {
 			updateConnect(false);
-			robot.CloseEV3();
+			comboBox.setEnabled(true);
+			robot.Close();
 		} else {
 			if (name.equals("") || name == null || name.length() <= 0) {
 				txtNomeRobot.setBackground(Color.RED);
 				logger("Nome do Robot vazio...");
 			} else {
+				robot = new RobotPlayer(comboBox.getSelectedItem().toString());
 				logger("A iniciar ligação");
 				logger("Aguarde...");
 				boolean control = true;
 				while (control) {
-					if (robot.OpenEV3(name)) {
+					if (robot.Open(name)) {
 						updateConnect(true);
 						control = false;
+						this.vaguear = new Vaguear("Vaguear", this.oEngTinhaRazao, this.robot);
+						this.vaguear.start();
+
+						this.evitar = new Evitar("Evitar", this.oEngTinhaRazao, this.robot);
+						this.evitar.start();
+
+						this.fugir = new Fugir("Fugir", this.oEngTinhaRazao, this.robot, this.vaguear);
+						this.fugir.start();
+						comboBox.setEnabled(false);
 					} else {
 						try {
 							Thread.sleep(250);
@@ -155,9 +156,10 @@ public class Gui extends Thread {
 	 * 
 	 * Método para alterar gráficamente a GUI.
 	 * 
-	 * @param value: - true = Altera gráficamente a GUI para indicar que a há
-	 *        Ligação ao Robot. - false = Altera gráficamente a GUI para indicar que
-	 *        não há Ligação ao Robot.
+	 * @param value:
+	 *            - true = Altera gráficamente a GUI para indicar que a há
+	 *            Ligação ao Robot. - false = Altera gráficamente a GUI para
+	 *            indicar que não há Ligação ao Robot.
 	 * @throws InterruptedException
 	 */
 	private void updateConnect(boolean value) throws InterruptedException {
@@ -172,8 +174,8 @@ public class Gui extends Thread {
 			btnConectar.setText("Ligar");
 			lblConectado.setBackground(Color.red);
 			logger("Ligação ao Robot desligada com sucesso!");
-//			vaguear.Stop();
-//			evitar.Stop();
+			// vaguear.Stop();
+			// evitar.Stop();
 			chckbxEvitar.setSelected(false);
 			chckbxVaguear.setSelected(false);
 			txtNomeRobot.setEditable(true);
@@ -185,8 +187,9 @@ public class Gui extends Thread {
 
 	/**
 	 * 
-	 * @param backwards: - False = Distnace value takes its integral value - True =
-	 *        Distance value is negated
+	 * @param backwards:
+	 *            - False = Distnace value takes its integral value - True =
+	 *            Distance value is negated
 	 */
 	private void move(boolean backwards) {
 		int dis = distance;
@@ -205,7 +208,8 @@ public class Gui extends Thread {
 	 * 
 	 * Método para fazer o Robot Virar...
 	 * 
-	 * @param right - True - Virar a direita - False - Virar a Esquerda
+	 * @param right
+	 *            - True - Virar a direita - False - Virar a Esquerda
 	 */
 	private void turn(boolean right) {
 		if (robotOn) {
@@ -234,7 +238,8 @@ public class Gui extends Thread {
 	/**
 	 * Função que regista o texto no logger caso este esteja activo
 	 * 
-	 * @param text - text - Texto para ser inserido no logger (gráfico)
+	 * @param text
+	 *            - text - Texto para ser inserido no logger (gráfico)
 	 */
 	public void logger(String text) {
 		if (txtrLogging.isEnabled()) {
@@ -272,11 +277,11 @@ public class Gui extends Thread {
 			file = new myFile(this.name, false);
 
 			file.write("robotName=" + this.name);
-			file.write("offSetLeft="+this.offSetLeft);
-			file.write("offSetRight="+this.offSetRight);
-			file.write("angle="+this.angle);
-			file.write("distance="+this.distance);
-			file.write("radius="+this.radius);
+			file.write("offSetLeft=" + this.offSetLeft);
+			file.write("offSetRight=" + this.offSetRight);
+			file.write("angle=" + this.angle);
+			file.write("distance=" + this.distance);
+			file.write("radius=" + this.radius);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -287,14 +292,14 @@ public class Gui extends Thread {
 			}
 		}
 	}
-	
+
 	private void readConfigurations() {
 		JFileChooser fc = new JFileChooser();
 		File dir = new File(System.getProperty("user.dir"));
 		fc.setCurrentDirectory(dir);
 		fc.setDialogTitle("Escolha uma configuração");
 		int returnVal = fc.showOpenDialog(null);
-		if(returnVal == JFileChooser.APPROVE_OPTION) {
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			f = fc.getSelectedFile();
 			try {
 				file = new myFile(f.getName().substring(0, f.getName().lastIndexOf(".")), true);
@@ -309,13 +314,13 @@ public class Gui extends Thread {
 				}
 			}
 		}
-		
+
 	}
-	
+
 	private void setConfinguration(String[] value) {
-		for(int i = 0; i < value.length; i++) {
+		for (int i = 0; i < value.length; i++) {
 			String action = value[i].substring(0, value[i].lastIndexOf("="));
-			String aValue = value[i].substring(value[i].lastIndexOf("=")+1);
+			String aValue = value[i].substring(value[i].lastIndexOf("=") + 1);
 			switch (action) {
 			case "robotName":
 				this.name = aValue;
@@ -361,21 +366,21 @@ public class Gui extends Thread {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setTitle("..:FSO-TP1:..");
-		frame.setResizable(false);
-		frame.getContentPane().setBackground(Color.BLACK);
-		frame.setBounds(100, 100, 653, 605);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-		frame.setLocationRelativeTo(null);
+		frmfsotp = new JFrame();
+		frmfsotp.setTitle("..:FSO-TP3:..");
+		frmfsotp.setResizable(false);
+		frmfsotp.getContentPane().setBackground(Color.BLACK);
+		frmfsotp.setBounds(100, 100, 653, 605);
+		frmfsotp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frmfsotp.getContentPane().setLayout(null);
+		frmfsotp.setLocationRelativeTo(null);
 
 		JPanel panelConeccao = new JPanel();
 		panelConeccao.setBorder(
 				new TitledBorder(null, "CONEC\u00C7\u00C3O", TitledBorder.LEFT, TitledBorder.TOP, null, Color.WHITE));
 		panelConeccao.setBackground(Color.BLACK);
 		panelConeccao.setBounds(10, 10, 630, 79);
-		frame.getContentPane().add(panelConeccao);
+		frmfsotp.getContentPane().add(panelConeccao);
 		panelConeccao.setLayout(null);
 
 		JLabel lblNomeRobot = new JLabel("Nome");
@@ -428,15 +433,20 @@ public class Gui extends Thread {
 		btnConectar.setToolTipText("Ligar Gestor");
 		btnConectar.setEnabled(true);
 		btnConectar.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		btnConectar.setBounds(471, 31, 112, 19);
+		btnConectar.setBounds(383, 31, 112, 19);
 		panelConeccao.add(btnConectar);
 
 		lblConectado = new JLabel("");
 		lblConectado.setBackground(Color.RED);
 		lblConectado.setOpaque(true);
 		lblConectado.setForeground(Color.RED);
-		lblConectado.setBounds(471, 52, 112, 3);
+		lblConectado.setBounds(383, 52, 112, 3);
 		panelConeccao.add(lblConectado);
+
+		comboBox = new JComboBox();
+		comboBox.setBounds(518, 31, 98, 23);
+		panelConeccao.add(comboBox);
+		comboBox.setModel(new DefaultComboBoxModel(new String[] { "Simular", "EV3", "NXT" }));
 
 		JPanel panelRobot = new JPanel();
 		panelRobot.setBorder(new TitledBorder(
@@ -444,7 +454,7 @@ public class Gui extends Thread {
 				TitledBorder.LEFT, TitledBorder.TOP, null, new Color(255, 255, 255)));
 		panelRobot.setBackground(Color.BLACK);
 		panelRobot.setBounds(10, 99, 630, 214);
-		frame.getContentPane().add(panelRobot);
+		frmfsotp.getContentPane().add(panelRobot);
 		panelRobot.setLayout(null);
 
 		JLabel lblDistancia = new JLabel("Dist\u00E2ncia");
@@ -468,6 +478,20 @@ public class Gui extends Thread {
 		panelRobot.add(lblRaio);
 
 		txtDistance = new JTextField();
+		txtDistance.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					distance = Integer.parseInt(txtDistance.getText());
+				}
+			}
+		});
+		txtDistance.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				distance = Integer.parseInt(txtDistance.getText());
+			}
+		});
 		txtDistance.setHorizontalAlignment(SwingConstants.CENTER);
 		txtDistance.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtDistance.setBounds(80, 49, 76, 19);
@@ -475,6 +499,20 @@ public class Gui extends Thread {
 		txtDistance.setColumns(10);
 
 		txtAngle = new JTextField();
+		txtAngle.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					angle = Integer.parseInt(txtAngle.getText());
+				}
+			}
+		});
+		txtAngle.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				angle = Integer.parseInt(txtAngle.getText());
+			}
+		});
 		txtAngle.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtAngle.setHorizontalAlignment(SwingConstants.CENTER);
 		txtAngle.setBounds(80, 111, 76, 19);
@@ -482,6 +520,21 @@ public class Gui extends Thread {
 		txtAngle.setColumns(10);
 
 		txtRadius = new JTextField();
+		txtRadius.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					radius = Integer.parseInt(txtRadius.getText());
+				}
+			}
+		});
+		txtRadius.addFocusListener(new FocusAdapter() {
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				radius = Integer.parseInt(txtRadius.getText());
+			}
+		});
 		txtRadius.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtRadius.setHorizontalAlignment(SwingConstants.CENTER);
 		txtRadius.setBounds(80, 171, 76, 19);
@@ -559,6 +612,20 @@ public class Gui extends Thread {
 		panelRobot.add(lblOffsetEsq);
 
 		txtOffsetLeft = new JTextField();
+		txtOffsetLeft.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					offSetLeft = Integer.parseInt(txtOffsetLeft.getText());
+				}
+			}
+		});
+		txtOffsetLeft.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				offSetLeft = Integer.parseInt(txtOffsetLeft.getText());
+			}
+		});
 		txtOffsetLeft.setHorizontalAlignment(SwingConstants.CENTER);
 		txtOffsetLeft.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtOffsetLeft.setBounds(173, 49, 76, 19);
@@ -566,6 +633,20 @@ public class Gui extends Thread {
 		txtOffsetLeft.setColumns(10);
 
 		txtOffsetRight = new JTextField();
+		txtOffsetRight.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+					offSetRight = Integer.parseInt(txtOffsetRight.getText());
+				}
+			}
+		});
+		txtOffsetRight.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				offSetRight = Integer.parseInt(txtOffsetRight.getText());
+			}
+		});
 		txtOffsetRight.setHorizontalAlignment(SwingConstants.CENTER);
 		txtOffsetRight.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtOffsetRight.setBounds(371, 49, 76, 19);
@@ -662,7 +743,7 @@ public class Gui extends Thread {
 				.setBorder(new TitledBorder(null, "LOGGING", TitledBorder.LEFT, TitledBorder.TOP, null, Color.WHITE));
 		panelLogging.setBackground(Color.BLACK);
 		panelLogging.setBounds(10, 323, 630, 228);
-		frame.getContentPane().add(panelLogging);
+		frmfsotp.getContentPane().add(panelLogging);
 		panelLogging.setLayout(null);
 
 		chckbxCheckLogging = new JCheckBox("Ativar Logger");
@@ -706,7 +787,7 @@ public class Gui extends Thread {
 		spLogging.setViewportView(txtrLogging);
 
 		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
+		frmfsotp.setJMenuBar(menuBar);
 
 		JMenu mnMore = new JMenu("More");
 		menuBar.add(mnMore);

@@ -18,7 +18,7 @@ public class Fugir extends Comportamentos {
 	private int actualDistance = 0;
 	private int actualSpeed = 50; // default 50%
 
-	public Fugir(String ThreadName, Semaphore oEngTinhaRazao, RobotLegoEV3 robot, Comportamentos vaguear) {
+	public Fugir(String ThreadName, Semaphore oEngTinhaRazao, myRobot robot, Comportamentos vaguear) {
 		super(ThreadName, oEngTinhaRazao, robot);
 
 		this.vaguear = vaguear;
@@ -52,14 +52,14 @@ public class Fugir extends Comportamentos {
 	}
 
 	public void run() {
-		initialDistance = robot.SensorUS(2);
+		initialDistance = robot.SensorUS();
 		for (;;) {
 			try {
 				Thread.sleep(DELAY);
 				if (getStatus() == Status.STOP) {
 					autoSuspend();
 				}
-				actualDistance = robot.SensorUS(2);
+				actualDistance = robot.SensorUS();
 				System.out.println("distancia: " + actualDistance);
 				if (vaguear.getIsRunning()) {
 					memory = true;
