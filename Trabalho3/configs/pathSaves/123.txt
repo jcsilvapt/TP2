@@ -1,15 +1,11 @@
-CurvarEsquerda=10;90
-Parar=false
 Reta=20
 Parar=false
-CurvarDireita=10;90
-Parar=false
 CurvarEsquerda=10;90
 Parar=false
 CurvarEsquerda=10;90
 Parar=false
 CurvarEsquerda=10;90
 Parar=false
-CurvarDireita=10;90
+CurvarEsquerda=10;90
 Parar=false
 Parar=true

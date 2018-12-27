@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Base64.Decoder;
 
 import Utils.myFile;
 
@@ -11,6 +12,17 @@ public class RobotPlayer extends myRobot implements Runnable {
 	private GUI2 gui;
 	private myFile file;
 	private String thisFile;
+	private String rep;
+	private final String Recta 			= "r";
+	private final String CurvarDireita	= "cd";
+	private final String CurvarEsquerda	= "ce";
+	private final String SensorToque	= "st";
+	private final String SensorUS		= "sus";
+	private final String SetVelocidade	= "sv";
+	private final String AjustarVMD 	= "avmd";
+	private final String AjustarVME		= "avme";
+	private final String Parar			= "s";
+	
 
 	public RobotPlayer(String type) {
 		super(type);
@@ -23,7 +35,8 @@ public class RobotPlayer extends myRobot implements Runnable {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH_mm_ss");
 		try {
-			thisFile = "pathSaves\\PathSave" + sdf.format(cal.getTime());
+			rep = sdf.format(cal.getTime());
+			thisFile = "pathSaves\\PathSave" + rep ;
 			file = new myFile(thisFile, false);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -45,7 +58,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 	public void Reta(int distancia) {
 		if (isToSave) {
 			try {
-				file.write("Reta="+Integer.toString(distancia));
+				file.write(Recta+"="+Integer.toString(distancia));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -57,7 +70,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 	public void CurvarDireita(int raio, int angulo) {
 		if (isToSave) {
 			try {
-				file.write("CurvarDireita="+Integer.toString(raio)+";"+Integer.toString(angulo));
+				file.write(CurvarDireita+"="+Integer.toString(raio)+";"+Integer.toString(angulo));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -69,7 +82,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 	public void CurvarEsquerda(int raio, int angulo) {
 		if (isToSave) {
 			try {
-				file.write("CurvarEsquerda="+Integer.toString(raio)+";"+Integer.toString(angulo));
+				file.write(CurvarEsquerda+"="+Integer.toString(raio)+";"+Integer.toString(angulo));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -82,7 +95,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 		int value = super.SensorToque();
 		if (isToSave) {
 			try {
-				file.write("SensorToque="+value);
+				file.write(SensorToque+"="+value);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -95,7 +108,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 		int value = super.SensorUS();
 		if (isToSave) {
 			try {
-				file.write("SensorUS="+value);
+				file.write(SensorUS+"="+value);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -107,7 +120,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 	public void SetVelocidade(int percentagem) {
 		if (isToSave) {
 			try {
-				file.write("setVelocidade="+percentagem);
+				file.write(SetVelocidade+"="+percentagem);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -119,7 +132,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 	public void AjustarVMD(int offset) {
 		if (isToSave) {
 			try {
-				file.write("AjsutarVMD="+offset);
+				file.write(AjustarVMD+"="+offset);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -131,7 +144,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 	public void AjustarVME(int offset) {
 		if (isToSave) {
 			try {
-				file.write("AjustarVME="+offset);
+				file.write(AjustarVME+"="+offset);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -143,7 +156,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 	public void Parar(boolean value) {
 		if (isToSave) {
 			try {
-				file.write("Parar="+value);
+				file.write(Parar+"="+value);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -151,31 +164,91 @@ public class RobotPlayer extends myRobot implements Runnable {
 		super.Parar(value);
 	}
 	
-	public void showTraj() {
-		String[] te = null;
+	public void showTraj(boolean reproducao) {
+		String[] ti = null;
 		try {
-			file = new myFile(thisFile, true);
-			te = file.read();
+			//file = new myFile("pathSaves\\PathSave"+rep, true);
+			file = new myFile("pathSaves\\PathSave22_39_24", true);
+			ti =  file.read();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		for(int i = 0; i < te.length; i++) {
-			System.out.println(te);
+		if(!reproducao) {
+			for(int i = 0; i < ti.length; i++) {
+				gui.RobotLogger(ti[i]);
+				decode(ti[i], reproducao);
+			}
+		}else {
+			CurvarDireita(0, 150);
+			for(int i = ti.length-1; i >= 0; i--) {
+				gui.RobotLogger(ti[i]);
+				decode(ti[i], reproducao);
+				
+			}
+			Parar(false);
 		}
 	}
+	
+	private void decode(String v, boolean reproducao) {
+		String action = v.substring(0, v.lastIndexOf("="));
+		String aValue = v.substring(v.lastIndexOf("=") + 1);
+		String v1 = "";
+		String v2 = "";
+		int delay = 0;
+		
+		switch (action) {
+		case Recta:
+			Reta(Integer.parseInt(aValue));
+			delay = Utils.Utils.delay(Integer.parseInt(aValue), false, 0);
+			break;
+		case CurvarDireita:
+			v1 = aValue.substring(0, aValue.lastIndexOf(";"));
+			v2 = aValue.substring(aValue.lastIndexOf(";")+1);
+			if(reproducao)
+				CurvarEsquerda(Integer.parseInt(v1), Integer.parseInt(v2));
+			else
+				CurvarDireita(Integer.parseInt(v1), Integer.parseInt(v2));
+			delay = Utils.Utils.delay(Integer.parseInt(v1), true, Integer.parseInt(v2));
+			break;
+		case CurvarEsquerda:
+			v1 = aValue.substring(0, aValue.lastIndexOf(";"));
+			v2 = aValue.substring(aValue.lastIndexOf(";")+1);
+			if(reproducao)
+				CurvarDireita(Integer.parseInt(v1), Integer.parseInt(v2));
+			else
+				CurvarEsquerda(Integer.parseInt(v1), Integer.parseInt(v2));
+			delay = Utils.Utils.delay(Integer.parseInt(v1), true, Integer.parseInt(v2));
+			break;
+		case Parar:
+			if(aValue.equalsIgnoreCase("true"))
+				Parar(true);
+			else
+				Parar(false);
+			break;
+		default:
+			break;
+		}
+		try {
+			Thread.sleep(delay);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 	@Override
 	public void run() {
 		for (;;) {
-			System.out.println("Some");
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
-
+	public static void main(String[] args) {
+		RobotPlayer r = new RobotPlayer("Simular");
+		
+	}
 }

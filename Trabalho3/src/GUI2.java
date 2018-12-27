@@ -1,6 +1,8 @@
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
@@ -13,33 +15,39 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.CardLayout;
+import javax.swing.JButton;
 
 public class GUI2 {
 
 	private JFrame frmTp;
-	private JToggleButton tglbtnGravarTrajetoria;
 
 	private RobotPlayer robot;
+	private JCheckBox chckbxGravar;
 	private JTextArea textArea;
-	private JToggleButton tglbtnReproduzirTrajetoria;
-	private JToggleButton tglbtnVoltarPontoInicial;
-	private JToggleButton tglbtnPararGravaoOu;
+
+	private final String isSaving = "Estado: A Gravar...";
+	private final String isNotSaving = "Estado: A Espera...";
+	private final String isPlaying = "Estado: A Reproduzir...";
+	private boolean saving = false;
+	private boolean replay = false;
+	private boolean toBegin = false;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					GUI2 window = new GUI2(null);
-					window.frmTp.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	// public static void main(String[] args) {
+	// EventQueue.invokeLater(new Runnable() {
+	// public void run() {
+	// try {
+	// GUI2 window = new GUI2(null);
+	// window.frmTp.setVisible(true);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// });
+	// }
 
 	/**
 	 * Create the application.
@@ -57,6 +65,69 @@ public class GUI2 {
 		textArea.setEditable(true);
 		textArea.append(text + "\n");
 		textArea.setEditable(false);
+	}
+
+	private void beginSaving() {
+		if (saving || replay || toBegin) {
+			Object[] options = { "Parar", "Cancelar" };
+			int n = JOptionPane.showOptionDialog(null,
+					"Encontra-se a Gravar/Reproduzir neste momento o que deseja fazer?", "Gravação/Reprodução em curso",
+					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			if (n == 0) {
+				Stop();
+			}
+		} else {
+			chckbxGravar.setText(isSaving);
+			chckbxGravar.setSelected(true);
+			saving = true;
+			robot.startSaving();
+		}
+	}
+
+	private void beginReplay() {
+		if (saving || replay || toBegin) {
+			Object[] options = { "Parar", "Cancelar" };
+			int n = JOptionPane.showOptionDialog(null,
+					"Encontra-se a Gravar/Reproduzir neste momento o que deseja fazer?", "Gravação/Reprodução em curso",
+					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			if (n == 0) {
+				Stop();
+			}
+		} else {
+			chckbxGravar.setText(isPlaying);
+			chckbxGravar.setSelected(true);
+			replay = true;
+			robot.showTraj(false);
+		}
+
+	}
+
+	private void toBegin() {
+		if (saving || replay || toBegin) {
+			Object[] options = { "Parar", "Cancelar" };
+			int n = JOptionPane.showOptionDialog(null,
+					"Encontra-se a Gravar/Reproduzir neste momento o que deseja fazer?", "Gravação/Reprodução em curso",
+					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+			if (n == 0) {
+				Stop();
+			}
+		} else {
+			chckbxGravar.setText(isPlaying);
+			chckbxGravar.setSelected(true);
+			toBegin = true;
+			robot.showTraj(true);
+		}
+	}
+
+	private void Stop() {
+		if (saving || replay || toBegin) {
+			chckbxGravar.setText(isNotSaving);
+			chckbxGravar.setSelected(false);
+			robot.stopSaving();
+			saving = false;
+			replay = false;
+			toBegin = false;
+		}
 	}
 
 	/**
@@ -78,49 +149,61 @@ public class GUI2 {
 		frmTp.getContentPane().add(panel);
 		panel.setLayout(null);
 
-		tglbtnGravarTrajetoria = new JToggleButton("Gravar Trajetoria");
-		tglbtnGravarTrajetoria.addMouseListener(new MouseAdapter() {
+		JButton btnGravarTrajetoria = new JButton("Gravar Trajetoria");
+		btnGravarTrajetoria.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (tglbtnGravarTrajetoria.isSelected()) {
-					robot.startSaving();
-				} else {
-					robot.stopSaving();
-				}
+				beginSaving();
 			}
 		});
-		tglbtnGravarTrajetoria.setBounds(10, 39, 189, 23);
-		panel.add(tglbtnGravarTrajetoria);
+		btnGravarTrajetoria.setBounds(10, 39, 189, 23);
+		panel.add(btnGravarTrajetoria);
 
-		tglbtnReproduzirTrajetoria = new JToggleButton("Reproduzir Trajetoria");
-		tglbtnReproduzirTrajetoria.addMouseListener(new MouseAdapter() {
+		JButton btnReproduzirTrajetoria = new JButton("Reproduzir Trajetoria");
+		btnReproduzirTrajetoria.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(tglbtnGravarTrajetoria.isSelected()) {
-					robot.showTraj();
-				}
+				beginReplay();
 			}
 		});
-		tglbtnReproduzirTrajetoria.setBounds(10, 73, 189, 23);
-		panel.add(tglbtnReproduzirTrajetoria);
+		btnReproduzirTrajetoria.setBounds(10, 73, 189, 23);
+		panel.add(btnReproduzirTrajetoria);
 
-		tglbtnVoltarPontoInicial = new JToggleButton("Voltar Ponto Inicial");
-		tglbtnVoltarPontoInicial.setBounds(10, 107, 189, 23);
-		panel.add(tglbtnVoltarPontoInicial);
+		JButton btnVoltarAoPonto = new JButton("Voltar ao Ponto Inicial");
+		btnVoltarAoPonto.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				toBegin();
+			}
+		});
+		btnVoltarAoPonto.setBounds(10, 107, 189, 23);
+		panel.add(btnVoltarAoPonto);
 
-		tglbtnPararGravaoOu = new JToggleButton("Parar Grava\u00E7\u00E3o ou Reprodu\u00E7\u00E3o");
-		tglbtnPararGravaoOu.setBounds(10, 141, 189, 23);
-		panel.add(tglbtnPararGravaoOu);
+		JButton btnPararGravaoOu = new JButton("Parar Grava\u00E7\u00E3o ou Reprodu\u00E7\u00E3o");
+		btnPararGravaoOu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Stop();
+			}
+		});
+		btnPararGravaoOu.setBounds(10, 141, 189, 23);
+		panel.add(btnPararGravaoOu);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(230, 17, 294, 179);
 		frmTp.getContentPane().add(scrollPane);
 
+		JPanel panel_1 = new JPanel();
+		scrollPane.setColumnHeaderView(panel_1);
+		panel_1.setLayout(new CardLayout(0, 0));
+
+		chckbxGravar = new JCheckBox(isNotSaving);
+		chckbxGravar.setEnabled(false);
+		panel_1.add(chckbxGravar, "name_683772691285094");
+
 		textArea = new JTextArea();
-		textArea.setBackground(Color.WHITE);
-		textArea.setEditable(false);
 		scrollPane.setViewportView(textArea);
 		frmTp.setBounds(100, 100, 540, 235);
-		frmTp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmTp.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	}
 }

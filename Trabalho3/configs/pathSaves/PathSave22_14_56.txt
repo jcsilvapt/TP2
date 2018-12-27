@@ -1,0 +1,12 @@
+r=50
+s=false
+ce=50;50
+s=false
+cd=50;50
+s=false
+r=50
+s=false
+r=50
+s=false
+r=50
+s=false
