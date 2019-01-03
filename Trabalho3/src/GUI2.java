@@ -1,22 +1,24 @@
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
+import java.awt.CardLayout;
 import java.awt.Color;
-import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
-import javax.swing.UIManager;
-import javax.swing.JCheckBox;
-import javax.swing.JToggleButton;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.CardLayout;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
+
+import Utils.myFile;
 
 public class GUI2 {
 
@@ -32,6 +34,10 @@ public class GUI2 {
 	private boolean saving = false;
 	private boolean replay = false;
 	private boolean toBegin = false;
+
+	private myFile file;
+	private File f;
+	private String lastSelectedFile;
 
 	/**
 	 * Launch the application.
@@ -84,7 +90,7 @@ public class GUI2 {
 		}
 	}
 
-	private void beginReplay() {
+	private void openPrompt() {
 		if (saving || replay || toBegin) {
 			Object[] options = { "Parar", "Cancelar" };
 			int n = JOptionPane.showOptionDialog(null,
@@ -94,10 +100,27 @@ public class GUI2 {
 				Stop();
 			}
 		} else {
-			chckbxGravar.setText(isPlaying);
-			chckbxGravar.setSelected(true);
-			replay = true;
-			robot.showTraj(false);
+			JFileChooser fc = new JFileChooser();
+			File dir = new File(System.getProperty("user.dir"));
+			fc.setCurrentDirectory(dir);
+			fc.setDialogTitle("Escolha um ficheiro de reprodução");
+			int returnVal = fc.showOpenDialog(null);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				f = fc.getSelectedFile();
+				try {
+					lastSelectedFile = "\\pathSaves\\"+f.getName().substring(0, f.getName().lastIndexOf("."));
+					file = new myFile("\\pathSaves\\"+f.getName().substring(0, f.getName().lastIndexOf(".")), true);
+					robot.showTraj(false, file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}finally {
+					try {
+						file.closeChannel();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 
 	}
@@ -115,7 +138,19 @@ public class GUI2 {
 			chckbxGravar.setText(isPlaying);
 			chckbxGravar.setSelected(true);
 			toBegin = true;
-			robot.showTraj(true);
+			try {
+				file = new myFile(lastSelectedFile, true);
+				robot.showTraj(true, file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					file.closeChannel();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
 		}
 	}
 
@@ -163,7 +198,7 @@ public class GUI2 {
 		btnReproduzirTrajetoria.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				beginReplay();
+				openPrompt();
 			}
 		});
 		btnReproduzirTrajetoria.setBounds(10, 73, 189, 23);
@@ -204,6 +239,6 @@ public class GUI2 {
 		textArea = new JTextArea();
 		scrollPane.setViewportView(textArea);
 		frmTp.setBounds(100, 100, 540, 235);
-		frmTp.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frmTp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }

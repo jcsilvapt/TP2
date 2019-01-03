@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Base64.Decoder;
 
@@ -33,7 +34,7 @@ public class RobotPlayer extends myRobot implements Runnable {
 	public void startSaving() {
 		isToSave = !isToSave;
 		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("HH_mm_ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy_HH_mm_ss");
 		try {
 			rep = sdf.format(cal.getTime());
 			thisFile = "pathSaves\\PathSave" + rep ;
@@ -164,29 +165,29 @@ public class RobotPlayer extends myRobot implements Runnable {
 		super.Parar(value);
 	}
 	
-	public void showTraj(boolean reproducao) {
+	public void showTraj(boolean toInitialPosition, myFile file) {
 		String[] ti = null;
+		System.out.println(file);
 		try {
-			//file = new myFile("pathSaves\\PathSave"+rep, true);
-			file = new myFile("pathSaves\\PathSave22_39_24", true);
 			ti =  file.read();
+			System.out.println(Arrays.toString(ti));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if(!reproducao) {
+		if(!toInitialPosition) {
 			for(int i = 0; i < ti.length; i++) {
 				gui.RobotLogger(ti[i]);
-				decode(ti[i], reproducao);
+				decode(ti[i], toInitialPosition);
 			}
 		}else {
 			CurvarDireita(0, 150);
 			for(int i = ti.length-1; i >= 0; i--) {
 				gui.RobotLogger(ti[i]);
-				decode(ti[i], reproducao);
+				decode(ti[i], toInitialPosition);
 				
 			}
-			Parar(false);
 		}
+		Parar(false);
 	}
 	
 	private void decode(String v, boolean reproducao) {

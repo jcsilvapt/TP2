@@ -198,7 +198,6 @@ public class Gui extends Thread {
 				dis = dis * -1;
 			}
 			robot.Reta(dis);
-			robot.Parar(false);
 		} else {
 			logger(NOTCONNECTED);
 		}
@@ -218,7 +217,6 @@ public class Gui extends Thread {
 			} else {
 				robot.CurvarEsquerda(radius, angle);
 			}
-			robot.Parar(false);
 		} else {
 			logger(NOTCONNECTED);
 		}

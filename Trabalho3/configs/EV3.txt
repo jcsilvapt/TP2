@@ -1,6 +1,6 @@
 robotName=EV3
 offSetLeft=0
 offSetRight=0
-angle=90
-distance=20
-radius=10
+angle=50
+distance=50
+radius=50
